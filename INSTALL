@@ -1,82 +1,61 @@
 ### PREREQUISITES:
 
-    ghc 7.6.3
-    perl 5.16
-    cpanm
-    cpanm YAML::Syck
-    cabal install lens
-    cabal install errors
-    cabal install wl-pprint
-    cabal install HsSyck
-    g++ 4.8
-
-
-#### Essential:
-
-Compilers
+#### Compilers
 
 - [g++ >= 4.8](http://gcc.gnu.org) for compiling the Virtual Machine and the SystemC model
 - [ghc >= 7.6.3](http://www.haskell.org) to compile the Gannet compiler
 
-Dynamic languages
+#### Dynamic languages
 
-- [perl >= 5.12](http://www.perl.org) for various toolchains scripts
+- [perl >= 5.12](http://www.perl.org) installed in `/usr/bin/perl`
 - [python >= 2.5.1](http://www.python.org) for SCons
 
-Build tools
+#### Build tools
 
 - [scons >= 1.2.0](http://www.scons.org) for building the Virtual Machine and the SystemC model
 
-[Haskell Platform](http://hackage.haskell.org/platform/)
+#### Libraries
 
-For the Gannet assembler:
+- Install the [Haskell Platform](http://hackage.haskell.org/platform/) 
 
-- YAML::Syck from [CPAN](http://search.cpan.org/dist/YAML-Syck/)
+- Install the following Haskell packages with `cabal`:
+
+    $ cabal install lens
+    $ cabal install errors
+    $ cabal install wl-pprint
+    $ cabal install HsSyck
+
+- Install the YAML::Syck Perl module from [CPAN](http://search.cpan.org/dist/YAML-Syck/), the easiest way is to install `cpanm` first, then do
+
+    $ cpanm YAML::Syck
 
 ### INSTALLATION:<a name="setup"></a>
 
-    # get the archive (gprm-1.0.tgz)
-    gprm-1.0.tgz	
-    # unpack the archive 
-     tar -zxvf gprm-1.0.tgz
+    # `git clone` the repo
 
-The environment variable `GPRM_DIR` must be set to the above directory.
-The file etc/gannetrc contains the environment settings for Gannet.
-Edit this file for your system; 
+The environment variable `GPRM_DIR` must be set to full path to the `gprm` directory.
 
-    $ vim etc/gannetrc
+    $ cd gprm
+    $ export GPRM_DIR=$PWD
 
-then source it:
+The file `etc/gprmc` contains the environment settings for GPRM.
+To source it:
 
-    $ . etc/gannetrc
+    $ . $GPRM_DIR/etc/gprmrc
 
-That's it, you can start using Gannet -- although you'll most likely want to build
-the compiler, Virtual Machine and/or SystemC hardware model. But without building
-anything, you can write Gannet assembly, generate bytecode with the Gannet Assembler
-and run it on Garnet, the Ruby version of the Gannet machine.
+That's it, you can start using GPRM!
 
-### BUILDING:
+### HOW TO USE:
 
-#### Assembler:
+Create a skeleton example `gprm-project-skeleton`:
 
-The Gannet assembler is written in Perl but you need to install YAML::Syck from CPAN:
+    $ gprm -i
 
-    $ cpan install YAML::Syck
+Or copy the example from `$GPRM_DIR/examples`. To build e.g. the `HelloWorld` example with 4 threads:
 
-#### Compiler:
+    $ gprm -t HelloTask -n 4
 
-Unless you're happy writing Gannet assembly, you'll need to build the Gannet compiler. 
+To run it:
 
-Then build the compiler:
-
-    $ cd Compiler
-    $ ./build.pl
-
-
-
-
-
-
-
-
+    $ ./main
 
