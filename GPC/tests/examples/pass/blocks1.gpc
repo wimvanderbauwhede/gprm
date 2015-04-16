@@ -1,0 +1,17 @@
+
+void GPRM::Test::blocks1() {
+    seq {
+        int k_seq = 6;
+        int v = k_seq*3;
+    }
+
+    {
+        int k_bare = 5;
+        bool v = k_bare == 3;
+    }
+
+    par {
+        int k_par = 6;
+        int v = k_par*3;
+    }
+}

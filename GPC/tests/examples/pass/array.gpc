@@ -1,0 +1,11 @@
+
+GPRM::Kernel::Test test[4];
+
+test[0] = GPRM::Kernel::Test::Test();
+
+int GPRM::Test::array() {
+    
+    int x = test[0].m1();
+    return 5;
+
+}

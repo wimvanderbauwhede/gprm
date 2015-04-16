@@ -1,0 +1,38 @@
+
+--- # Core Services Configuration
+System:
+  Version: 3.0
+  Libraries: [MergeSort, CoreServices]
+  NServiceNodes: 241 # excluding gateway; this is actually the number of threads
+  ServiceNodes:
+    ctrl: [ 1, [CoreServices.SEQ ] ]
+    control: [ 1, [CoreServices.BEGIN] ]
+    io: [ 1, [CoreServices.IO] ]
+    a: [ 2, [CoreServices.ALU] ]
+    reg: [ 2, [CoreServices.REG ] ]
+    MS: [2, [MergeSort.MergeSort] ]
+
+  Aliases:
+  # Alias Name (case sensitive): FQN
+    begin: control.CoreServices.BEGIN.begin
+    par: ctrl.CoreServices.BEGIN.begin
+    seq: ctrl.CoreServices.SEQ.seq
+    display: io.CoreServices.IO.display
+    'reg.write': reg.CoreServices.REG.write
+    'reg.read': reg.CoreServices.REG.read
+    'reg.inc': reg.CoreServices.REG.inc
+    'MS.array': MS.MergeSort.MergeSort.array
+    'MS.serial_ms': MS.MergeSort.MergeSort.serial_ms
+    'MS.merge_two': MS.MergeSort.MergeSort.merge_two
+    show: mgso.MergeSort.MergeSort.show
+#    lambda: 
+# These used to be "ALU_names"  
+    '+': a.CoreServices.ALU.plus
+#    '-': a.CoreServices.ALU.minus
+    '*': a.CoreServices.ALU.times
+#    '/': d.CoreServices.ALU.over
+#    '<': a.CoreServices.ALU.lt
+#    '>': a.CoreServices.ALU.gt
+#    '==': a.CoreServices.ALU.eq
+#    '!': a.CoreServices.ALU.not
+

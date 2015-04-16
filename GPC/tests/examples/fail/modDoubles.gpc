@@ -1,0 +1,9 @@
+
+
+double x = 2.0;
+double y = 6.0;
+double z = y % x;
+
+double modDoubles() {
+    return z;
+}

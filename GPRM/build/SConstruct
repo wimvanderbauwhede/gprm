@@ -1,0 +1,56 @@
+""" \file SConstruct
+   
+ \brief GPRM SBA - SCons script for building 
+"""
+
+##  (c) 2004-2015 Wim Vanderbauwhede <wim@dcs.gla.ac.uk>
+
+import os
+from GprmBuilder import build
+
+GPRM_DIR=os.environ["GPRM_DIR"]
+wd=ARGUMENTS.get('wd','.')
+
+def isLocal(libname):
+    return os.path.exists(wd+'/src/GPRM/Kernel/'+libname+'.cc')
+
+libnames=ARGUMENTS.get('sclib','')
+sclibnames=libnames.split(',')
+sclibs=[]
+for libname in sclibnames:
+    libsrc=''
+    if isLocal(libname):     
+        if libname!= 'CoreServices':
+            libsrc=wd+'/src/GPRM/Kernel/'+libname+'.cc'
+        wrappersrc=wd+'/gensrc/Services.cc'
+        selectsrc=wd+'/gensrc/SelectWrapper.cc'
+#       print libsrc
+        sclibs+=[wrappersrc,selectsrc,libsrc]
+
+sbasources=Split("""
+Bytecode.cc
+ServiceConfiguration.cc
+Packet.cc
+Base/ServiceCoreControl.cc
+Base/CoreServices.cc
+Base/Let.cc
+Memory.cc
+LookupTable.cc
+TaskDescription.cc
+Tile.cc
+ServiceManager.cc
+GatewayTile.cc
+Gateway.cc
+Interface.cc
+Transceiver.cc
+System.cc
+Runtime.cc
+Timings.cc
+Schedule.cc
+API.cc
+""")
+
+sbasources = [GPRM_DIR+'/GPRM/src/SBA/'+s for s in sbasources]
+
+build(wd,(sclibs+sbasources))
+

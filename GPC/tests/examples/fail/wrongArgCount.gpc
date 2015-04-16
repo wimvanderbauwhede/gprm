@@ -1,0 +1,9 @@
+
+
+int fun() {
+    return 1;
+}
+
+void wrongArgCount() {
+    fun(23);
+}

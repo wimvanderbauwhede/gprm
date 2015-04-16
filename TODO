@@ -1,0 +1,5 @@
+- Need to add pthread to SConstruct.gprm for Linux, so need to detect platform
+
+- sched_setaffinity: Invalid argument
+
+

@@ -1,0 +1,94 @@
+
+#ifndef SERVICECORE_H_
+#define SERVICECORE_H_
+
+//
+// Gannet Service-based SoC project - SBA Service Core class
+//
+// (c) 2004-2009 Wim Vanderbauwhede <wim@dcs.gla.ac.uk>
+//
+// $Id: ServiceCore.rb 2547 2009-05-08 11:28:47Z socgroup $
+
+// ****** Code generated from /home/ashkan/Gan04/Garnet/SBA/ServiceCore.rb by ../../util/r2n.pl on Sun Apr 22 17:14:00 2012 ******
+// ****** DO NOT EDIT (unless you know what you're doing) ******
+
+#include "Base/System.h"
+#include "Base/Tile.h"
+//#include "Base/ServiceCore.h"
+#include "ServiceConfiguration.h"
+#include "LookupTable.h"
+
+
+using namespace std;
+
+namespace SBA {
+class Base::ServiceCoreControl {
+	public:
+
+    	Base::System* sba_system_ptr;
+    	Base::Tile* sba_tile_ptr;
+	State_Register state_register;
+	LookupTable                     lookup_table;
+	Core_Status                     core_status;
+	Packet_Type core_return_type;
+	uint ack_ok;
+	uint n_args ;
+	Service service;
+	Service nservice;
+	ServiceAddress address;
+	Subtask current_subtask;
+	uint tid;
+	uint scid;
+	uint sclid;
+	uint opcode;
+	bool verbose ;
+        ServiceCore(Base::System* sba_s_, Base::Tile* sba_t_, Service& s_, ServiceAddress& addr_, uint tid_) :
+            sba_system_ptr(sba_s_),
+            	sba_tile_ptr(sba_t_),
+            	core_status(CS_idle),
+                service(s_), address(addr_),
+                current_subtask(0),
+                tid(tid_),
+                scid(0)
+			{
+
+			};
+
+
+
+
+ void run();
+
+
+ void suspend();
+
+    Word iterate();
+    Word iterate(Word v);
+
+ bool init();
+ void store(void*);
+ void* load();
+ // Cast a Word to some type, this should be a template function, taking a Word!
+ Word_List* unpack(Word);
+ // cast a pointer to Word, i.e. a uint64_t
+ Word pack(Word_List*);
+
+
+ MemAddresses& addresses();
+ uint argmode(uint);
+ //void* arg(uint);
+ Word arg(uint);
+
+ MemAddress addr(uint);
+ uint nargs();
+
+ void result(Word_List);
+ void resultWord(Word);
+
+ void put(MemAddress,Word_List);
+
+ uint method();
+}; // ServiceCore
+} // namespace SBA
+
+#endif // SERVICECORE_H_

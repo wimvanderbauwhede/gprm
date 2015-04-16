@@ -1,0 +1,7 @@
+
+
+void wrongPointers4(bool *b) {
+
+    bool *c = 4 - b;
+
+}

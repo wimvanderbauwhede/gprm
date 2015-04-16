@@ -1,0 +1,8 @@
+
+GPRM::Kernel::Test a;
+
+a = GPRM::Kernel::Blah::Blah();
+
+int wrongNamespace() {
+    return 0;
+}

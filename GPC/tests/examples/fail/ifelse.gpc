@@ -1,0 +1,10 @@
+
+void ifelse() {
+
+    if (true) {
+        int i = 4;
+    } else {
+        return j;
+    }
+
+}

@@ -1,0 +1,8 @@
+
+GPRM::Kernel::Test a[5];
+
+a = GPRM::Kernel::Test::Test(); // a is the array of objects
+
+int constructArray() {
+    return 0;
+}

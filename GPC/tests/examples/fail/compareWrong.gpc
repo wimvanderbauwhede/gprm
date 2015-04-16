@@ -1,0 +1,10 @@
+
+
+int compareWrong() {
+
+    int x = 5;
+    double y = 6.0;
+    bool z = y  == x;
+    return x;
+
+}

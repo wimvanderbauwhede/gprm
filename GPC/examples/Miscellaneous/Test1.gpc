@@ -1,0 +1,41 @@
+// Test Program
+
+int n = 6;
+
+// Static Objects used during Program
+Kernel::Test test; // Single
+Kernel::Multi multi[n]; //Array, static size
+
+multi[0] = Kernel::Multi::Multi(20,20); // Example of Object initialization
+
+int fun0() {
+ return n;
+}
+
+
+int fun1() {
+    int j = test.print();
+<<<<<<< HEAD:examples/Test.gpc
+    for(int i = 0; i<n; i+=1) { // Static for loop
+=======
+    for(int i = 0; i < n; i+=1) { // Static for loop
+>>>>>>> cdad673bcd6bac3764480fd00e47d5b03c509dcb:examples/Miscellaneous/Test1.gpc
+        test.print(i); 
+    }
+    int i = test.m1();
+    return 1;
+}
+
+//Entry function
+int Test1() {
+    seq {
+        int k = fun0();
+        if (k < 3) {
+            return fun1() + (10 * 5 -2);
+        }
+        else {
+            multi[0].m2();
+            return n;
+        }
+    }
+}

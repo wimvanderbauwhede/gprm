@@ -1,0 +1,8 @@
+
+int errBoolNot() {
+    
+    int x = 5;
+    bool y = !x;
+    return x;
+
+}

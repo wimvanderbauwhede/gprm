@@ -1,0 +1,37 @@
+
+--- # Core Services Configuration
+System:
+  Version: 3.0
+  Libraries: [Fib, CoreServices]
+  NServiceNodes: 4
+  ServiceNodes:
+    a: [ 2, [CoreServices.ALU] ]
+    reg: [ 1, [CoreServices.REG ] ]
+    f: [2, [Fib.Fib] ]
+
+  Aliases:
+  # Alias Name (case sensitive): FQN
+    begin: control.CoreServices.BEGIN.begin
+    par: ctrl.CoreServices.BEGIN.begin
+    seq: ctrl.CoreServices.SEQ.seq
+    if: ifs.CoreServices.IF.if
+    'reg.write': reg.CoreServices.REG.write
+    'reg.read': reg.CoreServices.REG.read
+    'reg.inc': reg.CoreServices.REG.inc
+    'f.fib': f.Fib.Fib.fib
+    'fib_iter': f.Fib.Fib.fib_iter
+    'f.timer': f.Fib.Fib.timer
+    'f.start_timer': f.Fib.Fib.start_timer
+
+#    '+': fibo.Fib.Fib.add
+#    lambda: 
+# These used to be "ALU_names"  
+    '+': a.CoreServices.ALU.plus
+    '-': a.CoreServices.ALU.minus
+    '*': a.CoreServices.ALU.times
+#    '/': d.CoreServices.ALU.over
+#    '<': a.CoreServices.ALU.lt
+#    '>': a.CoreServices.ALU.gt
+#    '==': a.CoreServices.ALU.eq
+#    '!': a.CoreServices.ALU.not
+

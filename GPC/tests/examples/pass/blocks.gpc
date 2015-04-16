@@ -1,0 +1,30 @@
+/*
+GPRM::Kernel::Test test[3];
+test[0] = GPRM::Kernel::Test::Test(0);
+test[1] = GPRM::Kernel::Test::Test(1);
+*/
+
+bool GPRM::Test::test(bool a) {
+    return a == true;
+}
+
+int GPRM::Test::blocks(int *a) {
+
+    seq {
+        test[0].m1();
+        test[1].m2(5);
+    }
+
+    int k = 5;
+    test(true);
+    {
+        int j = 5;
+        bool k = j == 3;
+    }
+
+    par {
+        int k = 6;
+    }
+
+    return 2;
+}

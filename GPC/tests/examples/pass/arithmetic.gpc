@@ -1,0 +1,52 @@
+//GPRM::Kernel::Test obj;
+//obj = GPRM::Kernel::Test::Test();
+
+void GPRM::Test::arith2(int z) {
+    seq {
+    int a = obj.m1();
+    int b1 = 43;
+    int a5 = b1 / 5;
+    obj.m0( (a / 6) + z); // FIXME! 
+    bool b = obj.m2(a << 4, a >> 3, a * 2, a & 2, a ^ 2, a | 3, a < 2, a <= 2, a > 1, a >= 1, ~a, -a, a % 2, a != 10); 
+    char c = obj.m3(b || false, b && true, b == true, !b); 
+    string d = obj.m4(c);
+    obj.m5(d);
+    }
+}
+
+int GPRM::Test::arithmetic() {
+    int xx = 4 << 3;
+    bool yy = xx == xx;
+    double z = 5.03;
+    char ch = 'c';
+    string str = "test";
+    int bb = xx + xx - xx * xx / xx | xx & xx ^ xx >> 2;
+    bool cc = bb <= 5 && bb >= 5 || bb != 2;
+    bool dd = bb != bb;
+    
+    bool a = 5 < 4;
+    bool b = 5 > 4;
+    bool c = 5 <= 4;
+    bool d = 5 >= 4;
+    int e = ~5;
+    bool f = !true;
+    int g = -6; 
+    double x = 0.5 + 0.5;
+    double y = x + z;
+    int h = e + 10;
+    int i = e + h;
+    bool j = f == true;
+    bool k = j == f && true;
+    bool l = k || false;
+    bool m = l != k;
+    bool n = m && l;
+    double o = 0.5;
+    double p = -(x + 3.0); 
+    bool q = obj.m1();
+    double r = 10.0/5.0;
+    
+    int blah = g % e;
+
+    arith2(10);
+    return 1;    
+}

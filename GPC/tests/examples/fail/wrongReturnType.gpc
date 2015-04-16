@@ -1,0 +1,5 @@
+
+
+int wrongReturnType() {
+    return false;
+ }

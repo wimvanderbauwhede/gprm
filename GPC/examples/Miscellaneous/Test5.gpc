@@ -1,0 +1,10 @@
+int N = 2;
+GPRM::Kernel::Test tests[N];
+
+tests[0] = GPRM::Kernel::Test::Test(0);
+
+
+int Test5() {
+        tests[0].m0();
+        return 0;
+}

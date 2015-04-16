@@ -1,0 +1,7 @@
+
+
+GPRM::Kernel::Test t;
+
+void methodArgs() {
+    bool a = t.m1(True || true);
+}

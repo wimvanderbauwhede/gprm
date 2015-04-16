@@ -1,0 +1,9 @@
+
+
+bool wrongTypeDecl3() {
+
+    bool x = false;
+    int a = 5;
+    return a && x;
+
+}

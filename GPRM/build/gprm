@@ -1,0 +1,256 @@
+#!/usr/bin/perl
+use 5.012;
+use warnings;
+use strict;
+
+# build script for GPRM
+use Config;
+use Cwd;
+use Getopt::Std;
+use YAML::Syck;
+use Data::Dumper;
+use WrapperGenerator;
+
+my $gannet_dir = $ENV{GPRM_DIR};
+my $sba_dir=cwd();
+my $platform = 'macosx';
+my $os=`uname`;
+if ($os=~/Linux/) {
+    $platform='linux';
+    }
+    
+my %opts;
+getopts( 'ihvwNt:Y:n:cX:dbgSse', \%opts );
+
+if ( $opts{'h'} or ((scalar( keys %opts)==0)&&(scalar @ARGV==0))) {
+	die "
+    Gannet build script for GPRM
+    gprm -i:    Init, create the directory structure and source file skeleton for GPRM
+    gprm -t <your task> -n <number of hreads> 
+        -t: Name of the toplevel GPRM Task class which should reside in src/GPRM/Task/  
+        -n: Number of hardware threads to be used (4 by default) 
+    gprm -c: clean
+    
+    Following options are intended for advanced use
+        
+    -Y YAML-file.yml: SBA config file to use (normally generated from the Task header)    
+    -X: cross-compile for Linux on Tilera or MIC (specify platform name)
+    -S: use task stealing
+
+
+    Following options are intended for use in development/testing/debugging
+    -w: warnings 
+    -v: verbose
+    -d: debug 
+    -N: DO NOT use POSIX threads, for single-threaded debugging        
+    \n";
+}
+=pod Extra Options
+
+    -g: generate SystemConfiguration.h from YAML-file, don't build
+    -b: build only, don't generate
+    -e: compile as binary executable
+    -s: compile as a shared library (default is static library)    
+    
+=cut    
+my $init= $opts{'i'}?1:0;
+
+my $wd=cwd();
+if ($init) {
+    
+    system("tar -zxvf $gannet_dir/GPRM/gprm-project-skeleton.tgz");
+}
+
+if ($init or not -e "$gannet_dir/bin/gpcc") {    
+    # TODO: build gpcc and gannetc
+    chdir "$gannet_dir/GPC";
+    system('cabal configure');
+    system('cabal build');
+    system('cabal install --bindir=../bin');
+    chdir $wd;
+}
+if ($init or not -e "$gannet_dir/bin/gannetc") {    
+    chdir "$gannet_dir/Compiler";
+    system('./build.pl -C -i');
+    chdir $wd;
+}    
+if ($init) {    
+    die "Done init. 
+Add your own sources in src/ and your GPRM kernels and tasks in src/GPRM/Kernel and src/GPRM/Task respectively.
+You can compile your project without GPRM for testing, see the SConstruct file in src/
+To compile with GPRM, run
+
+  gprm -t <YourTask> -n <NThreads>
+  
+This will build the GPRM runtime and also create a SConstruct.gprm file to build your code with GPRM.
+";      
+}
+
+
+my $warn= $opts{'w'}?1:0;
+my $verbose= $opts{'v'}?1:0;
+my $generate= $opts{'b'}?($opts{'g'}?1:0):1;
+my $build= $opts{'g'}?($opts{'b'}?1:0):1;
+my $clean=$opts{'c'}?1:0;
+my $scons_c=$clean?'-c':'';
+my $debug=$opts{'d'}?1:0;
+
+my $scons_ext='';#.local';
+my $steal= $opts{'S'}?1:0;
+
+
+my $nthreads=$opts{'n'} // 4; # Ad hoc!
+my $scons_nogen='nogen=1';
+my $scons_v=$verbose?'v=1':'';
+my $scons_w=$warn?'w=1':'';
+my $scons_d=$debug?'dbg=1':'';
+
+my $scons_pthreads=$opts{'N'}?'':'pthreads=1';
+my $scons_xc=$opts{'X'}?'xc='.$opts{'X'}:'';
+my $scons_lib = $opts{'e'}?'':'lib=1';
+my $scons_shlib=$opts{'s'}? ($opts{'e'} ? ''  : 'shlib=1') : '';
+
+# -C: count cycles
+my $scons_cycles=$opts{'C'}?'cycles=1':'';
+
+my $scons_wordsz='wordsz=64';
+my $scons_new='new=1';
+my $scons_dyn='dyn=1';
+my $scons_vm='vm=1';
+my $scons_svm='';
+
+
+my $scons_wd='wd='.$wd;
+if (not exists $opts{'t'} or not defined $opts{'t'}) {
+    die "Please specify the task name with -t\n";
+}
+my $task_path= $opts{'t'};
+$task_path=~s/\.\w+\s*$//;
+my $task_name= pop [split(/\//,$task_path)]; 
+if ($task_path!~/\//) {
+    $task_path="$wd/src/GPRM/Task";
+} else {
+    $task_path=~s/\/\w+$//;
+}
+
+if (!$clean) {
+    WrapperGenerator::generate_yml($task_name, $task_path, $nthreads);
+}
+my $ymlfile = $opts{'Y'}||"$task_path/$task_name.yml";
+if ((not $opts{'Y'}) and @ARGV==1) {
+    $ymlfile=$ARGV[0];
+    $ymlfile=~s/\.*$//;
+    $ymlfile.='.yml';
+}
+my $ymlpath=$ymlfile;
+if ($ymlfile!~/^\//) {
+	$ymlpath="$wd/$ymlfile";
+}
+my $scons_sclib='';
+my $sclib='';
+
+my $config_href = YAML::Syck::LoadFile($ymlpath);
+
+my %config = %{$config_href};
+my @sclibs=@{ $config{'System'}{'Libraries'} };
+$sclib=join(',',@sclibs);
+$scons_sclib='sclib='.$sclib;
+
+my $cxx_gen_source_path="$wd/gensrc";
+my $cxx_source_path="$gannet_dir/GPRM/SBA";
+#my $cxx_build_path="$gannet_dir/GPRM/build";
+my $cxx_build_path="$wd";
+my $gprm_lib_path="$wd/lib";
+
+my $run_scons_str="GPRM_YML_CONFIG=$ymlpath scons $scons_c $scons_new $scons_sclib $scons_v $scons_w $scons_d $scons_cycles $scons_dyn $scons_vm $scons_pthreads $scons_wordsz $scons_nogen $scons_wd $scons_lib $scons_shlib $scons_xc -f $gannet_dir/GPRM/build/SConstruct$scons_ext";
+$run_scons_str=~s/\s+/ /g;
+
+#$wd="$gannet_dir/GPRM/build";
+if ($clean) { # CLEAN!
+# Clean GPRM build
+    system('scons -f SConstruct.gprm -c'); 
+	say "$run_scons_str" if $verbose;
+	system("$run_scons_str");
+	say "build.pl: Cleaning gensrc..." if $verbose;
+	for my $file (qw(SystemConfiguration.h Services.h Services.cc SelectWrapper.cc),"$task_name.cc","$task_name.o") {
+		if (-e "./gensrc/$file") {
+			say "rm ./gensrc/$file" if $verbose;
+			unlink "./gensrc/$file";
+		}
+	}
+	for my $file (@sclibs) {
+		next if $file eq 'CoreServices';
+		if (-e "./gensrc/$file.yml") {
+			say "rm ./gensrc/$file.yml" if $verbose;
+			unlink "./gensrc/$file.yml";
+		}
+	}
+	if (-e './bin/gannetvm64') {
+		say 'rm ./bin/gannetvm64' if $verbose;
+		unlink  './bin/gannetvm64';
+	}
+	if (-e './lib/libgannet.a') {
+		say 'rm ./lib/libgannet.a' if $verbose;
+		unlink  './lib/libgannet.a';
+	}
+die "Done cleaning\n";
+} else { # GENERATE
+	if ($generate) {
+# 0. Generate .yml library configuration from kernel class(es)
+#    and generate the wrapper function(s)		
+		my $changed = `scons -s -f $gannet_dir/GPRM/build/SConstruct.CheckChange.py SRC=$ymlpath`;
+		chomp $changed;
+        my $is_core=0;
+        my $nclasses=@sclibs;
+		for my $class (@sclibs) {
+            if ($class eq 'CoreServices') {$is_core=1};
+# FIXME: If there are several classes, this will generate a Services.h for each, so it will overwrite!
+
+			if (
+			($changed eq '1' or (not -e "$cxx_gen_source_path/$class.yml" and $class ne 'CoreServices') ) or
+				 ( $class eq 'CoreServices' and $nclasses==1 ) ) {
+				say "build.pl: generating library configuration $class.yml and wrappers" if $verbose;
+				my @task_methods=WrapperGenerator::generate($class,$nclasses,$is_core, $task_name, $task_path);
+				for my $task_method(@task_methods) {
+				    system("gpcc src/GPRM/Task/$task_method.cc -n $nthreads");
+				    system("gannetc	-Y $ymlfile  src/GPRM/Task/$task_method.td");
+				}
+            } else {
+                say "build.pl: did NOT generate library configuration $class.yml and wrappers!!!" if $verbose;
+            }
+		}
+		my $c=($clean)?'-c':'';
+		chdir "$gannet_dir/GPRM/build";
+		say "build.pl:  generating SystemConfiguration.h from YML files" if $verbose;
+# 1. Generate SystemConfiguration from YAML file 
+#TODO: this should go into the GannetBuilder
+		my $create_config_scons_str="scons $c -f SConstruct.SystemConfiguration.py Y='$ymlpath' D='$cxx_gen_source_path' WD='$sba_dir' $scons_wordsz gen";
+        $create_config_scons_str=~s/\s+/ /g;
+		say "$create_config_scons_str" if $verbose;
+		system($create_config_scons_str);
+	}
+
+	if ($build) {
+# 2. Build GPRM code 
+        if ($opts{'E'}) {
+			say "build.pl: building GPRM binary" if $verbose;
+			say "cd $cxx_build_path" if $verbose;
+			chdir "$cxx_build_path";
+		} else {
+			say "build.pl: building GPRM library" if $verbose;
+			say "cd $gprm_lib_path" if $verbose;
+			chdir "$gprm_lib_path";
+		}
+		say $run_scons_str if $verbose;
+		system($run_scons_str);
+# 3. Install binary
+        if ($opts{'E'}) {
+			say "build.pl: installing binary" if $verbose;
+			say $run_scons_str," install" if $verbose;
+			system("$run_scons_str install");
+        }
+	}
+}
+# 4. Build main code
+chdir $sba_dir;
+system('scons -f SConstruct.gprm');

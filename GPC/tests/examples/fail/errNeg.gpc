@@ -1,0 +1,9 @@
+
+
+int errNeg() {
+    
+    bool x = true;
+    int y = -x;
+    return y;
+
+}

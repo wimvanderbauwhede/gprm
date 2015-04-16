@@ -1,0 +1,6 @@
+
+void wrongPointers5(double *d) {
+    
+    double* e = d == 0.53;
+
+}

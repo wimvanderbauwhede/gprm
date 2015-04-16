@@ -1,0 +1,5 @@
+
+
+int wrongPointers(int *a) {
+    int b = a * 6;
+}

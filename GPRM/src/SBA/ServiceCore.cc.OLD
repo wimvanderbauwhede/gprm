@@ -1,0 +1,240 @@
+//
+// Gannet Service-based SoC project - SBA Service Core class
+//
+// (c) 2004-2012 Wim Vanderbauwhede <wim@dcs.gla.ac.uk>
+//
+
+
+#include "System.h"
+#include "Tile.h"
+#include "ServiceCoreControl.h"
+
+using namespace std;
+using namespace SBA;
+
+
+void ServiceCoreControl::run()  {
+    System& sba_system=*((System*)sba_system_ptr);
+    Tile& sba_tile=*(sba_system.nodes[address]);
+    printf("\n From ServiceCoreControl: %d \n", sba_tile.address);
+        scid=sba_tile.service_manager.scid;
+        sclid=sba_tile.service_manager.sclid;
+        if (sba_tile.service_manager.core_status==CS_busy ){
+            current_subtask=sba_tile.service_manager.current_subtask;
+
+
+#ifdef VERBOSE
+            cout << "" <<service<< " ServiceCoreControl: " <<sba_tile.service_manager.arg_addresses.size()<< " addresses"<<endl;
+#endif // VERBOSE
+
+            sba_tile.service_manager.core_status=CS_done;
+            core_status=CS_done;
+
+            Service service_id=sba_tile.service_manager.service_id;
+            service=service_id;
+            n_args=sba_tile.service_manager.n_args;
+            core_status=sba_tile.service_manager.core_status;
+            core_return_type=sba_tile.service_manager.core_return_type;
+            ack_ok=sba_tile.service_manager.ack_ok;
+            opcode=sba_tile.service_manager.opcode;
+#ifdef VERBOSE
+            cout << "CALL TO CORE " <<sclid-1<< " " <<scid<< " "<<endl;
+#endif // VERBOSE
+
+            FuncPointer fp=sba_system.cfg.services[(sclid<<8)+scid].core;
+            (*fp)((Base::ServiceCoreControl*)this);
+#ifdef VERBOSE
+        cout << "DONE CALL TO CORE"<<endl;
+#endif // VERBOSE
+            sba_tile.service_manager.core_return_type=core_return_type;
+            sba_tile.service_manager.ack_ok=ack_ok;
+            sba_tile.service_manager.n_args=n_args;
+            sba_tile.service_manager.opcode=opcode;
+            sba_tile.service_manager.core_status=core_status;
+            if ((sba_tile.service_manager.subtask_code_fifo.size()>0) or (sba_tile.service_manager.subtask_reference_fifo.size()>0) or (sba_tile.service_manager.core_status!=CS_idle)){
+              sba_tile.service_manager.status=true;
+            }
+#ifdef VERBOSE
+            cout << "ServiceCoreControl: CORE STATUS : " <<sba_tile.service_manager.core_status<< "=" <<core_status<< ""<<endl;
+#endif // VERBOSE
+        }
+
+
+    } // of run()
+
+
+ void ServiceCoreControl::suspend() {
+        System& sba_system=*((System*)sba_system_ptr);
+        Tile& sba_tile=*(sba_system.nodes[address]);
+        core_status=CS_managed;
+        sba_tile.service_manager.subtask_list.status(sba_tile.service_manager.current_subtask,STS_blocked);
+        sba_tile.service_manager.pending_subtasks_fifo.push_back(sba_tile.service_manager.current_subtask);
+    }
+    Word ServiceCoreControl::iterate() {
+        suspend();
+        return 0;
+    }
+    Word ServiceCoreControl::iterate(Word v) { // FIXME: can I use a template here?
+        suspend();
+        return v;
+    }
+
+
+ bool ServiceCoreControl::init() {
+        if (state_register[0]==0){
+            state_register[0]=1;
+            return true;
+        } else {
+            return false;
+        }
+    }
+
+ void ServiceCoreControl::store(void* state) {
+         state_register[1]=(MWord)state;
+    }
+
+ void* ServiceCoreControl::load() {
+         return (void*)state_register[1];
+    }
+
+ Word_List* ServiceCoreControl::unpack(Word w) {
+         void* v_p = (void*)w;
+	     Word_List* wl_p = (Word_List*)v_p;
+         return wl_p;
+    }
+
+ /* Wim */
+  
+ Word ServiceCoreControl::pack(Word_List* wl_p) {
+        void* v_p=(void*)wl_p;
+		Word w = (Word)v_p;
+        return w;
+    }
+
+ /* Ashkan 
+ Word ServiceCoreControl::pack(Word_List* res) {
+	 //void* v = (void*) res;
+	 Word w = (Word)res;
+	 Word_List wl;
+	 wl.at(0) = w;
+	 //Uint64 temp = wl[0]; Uint64 temp2 = wl.at(0);
+	 	// printf("same values? : %u,***%u\n\n\n", temp,temp2);
+	 cout << "From Pack:  " << wl[0] <<endl;
+	 return wl[0];
+ }
+*/
+
+
+ MemAddresses& ServiceCoreControl::addresses() {
+        System& sba_system=*((System*)sba_system_ptr);
+        Tile& sba_tile=*(sba_system.nodes[address]);
+        return sba_tile.service_manager.arg_addresses;
+    }
+
+ uint ServiceCoreControl::argmode(uint argn) {
+        System& sba_system=*((System*)sba_system_ptr);
+        Tile& sba_tile=*(sba_system.nodes[address]);
+        return  sba_tile.service_manager.subtask_list.argmodes(sba_tile.service_manager.current_subtask)[argn] & 0x3;
+    }
+
+/* Word_List ServiceCoreControl::arg(uint argn) {
+        System& sba_system=*((System*)sba_system_ptr);
+        Tile& sba_tile=*(sba_system.nodes[address]);
+        uint argmode = sba_tile.service_manager.subtask_list.argmodes(sba_tile.service_manager.current_subtask)[argn] & 0x3;
+          Word_List words;
+          printf("\n\n\n\n\n The argmode is ********************** %u\n\n\n\n\n\n\n\n", argmode);
+        if (argmode == 0){
+            MemAddress addr=sba_tile.service_manager.arg_addresses[argn];
+            words=sba_tile.data_store.mget(addr);
+
+        } else if (argmode ==1 or argmode == 2            ){
+            if (argmode == 2    ){
+            	Word hword=EXTSYM;
+                hword=setKind(hword,(argmode>>5)&0x3);
+                hword=setDatatype(hword,(argmode>>2)&0x3);
+                words.push_back(hword);
+            }
+            words.push_back(sba_tile.service_manager.arg_addresses[argn]);
+        } else {
+            cerr << "ARGMODE must be 0,1 or 2";
+            exit(1);
+        }
+
+
+        return words;
+    }*/
+// What this does is take a Word and cast it to void*, why? 
+ //void* ServiceCoreControl::arg(uint argn) {
+ Word ServiceCoreControl::arg(uint argn) {
+         System& sba_system=*((System*)sba_system_ptr);
+         Tile& sba_tile=*(sba_system.nodes[address]);
+         uint argmode = sba_tile.service_manager.subtask_list.argmodes(sba_tile.service_manager.current_subtask)[argn] & 0x3;
+         //Word* temp = new Word;
+//         void* word = malloc (sizeof(void*));
+		 Word word;
+           //printf("\n\n\n\n\n The argmode is ********************* %u\n\n\n\n\n\n\n", argmode);
+		 if (argmode == 0) {
+             MemAddress addr=sba_tile.service_manager.arg_addresses[argn];
+//             word=reinterpret_cast<void*>(sba_tile.data_store.mgetWord(addr));
+             word=sba_tile.data_store.mgetWord(addr);
+		 } else {
+//	         word=(void*)sba_tile.service_manager.arg_addresses[argn];
+	         word=sba_tile.service_manager.arg_addresses[argn];
+		 }
+		 return word;
+     }
+
+ MemAddress ServiceCoreControl::addr(uint argn) {
+        System& sba_system=*((System*)sba_system_ptr);
+        Tile& sba_tile=*(sba_system.nodes[address]);
+        return sba_tile.service_manager.arg_addresses[argn];
+    }
+
+ uint ServiceCoreControl::nargs() {
+        System& sba_system=*((System*)sba_system_ptr);
+        Tile& sba_tile=*(sba_system.nodes[address]);
+        return sba_tile.service_manager.arg_addresses.size();
+    }
+
+
+ /*void ServiceCoreControl::result(Word_List wl) {
+        System& sba_system=*((System*)sba_system_ptr);
+        Tile& sba_tile=*(sba_system.nodes[address]);
+        MemAddress         result_addr=sba_tile.service_manager.subtask_list.result_address(sba_tile.service_manager.current_subtask);
+	sba_tile.data_store.mput(result_addr,wl);
+	//double time3 = wsecond();
+        //printf("\n After store.mput: %f \n", time3);
+
+    }
+ */
+void ServiceCoreControl::result(Word_List wl) {
+         System& sba_system=*((System*)sba_system_ptr);
+         Tile& sba_tile=*(sba_system.nodes[address]);
+         MemAddress         result_addr=sba_tile.service_manager.subtask_list.result_address(sba_tile.service_manager.current_subtask);
+         int w = wl[0];
+         //printf("from result...wl[0] = %u\n",w);
+         cout << "From result:  " << wl[0] <<endl;
+       //sba_tile.data_store.mput(result_addr,wl);
+         sba_tile.data_store.mputWord(result_addr,wl[0]);
+
+     }
+
+void ServiceCoreControl::resultWord(Word w) {
+         System& sba_system=*((System*)sba_system_ptr);
+         Tile& sba_tile=*(sba_system.nodes[address]);
+         MemAddress         result_addr=sba_tile.service_manager.subtask_list.result_address(sba_tile.service_manager.current_subtask);
+         //cout << "From resultWord:  " << w <<endl;
+         sba_tile.data_store.mputWord(result_addr,w);
+     }
+
+
+ void ServiceCoreControl::put(MemAddress addr,Word_List wl) {
+        System& sba_system=*((System*)sba_system_ptr);
+        Tile& sba_tile=*(sba_system.nodes[address]);
+        sba_tile.data_store.mput(addr,wl);
+    }
+
+
+ uint ServiceCoreControl::method() {
+        return opcode+(scid<< FS_SCId)+(sclid<< FS_SCLId);
+    }

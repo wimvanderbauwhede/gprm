@@ -1,0 +1,54 @@
+""" \file SConstruct
+   
+ \brief Gannet SBA - SCons script for building 
+"""
+
+##  (c) 2004-2009 Wim Vanderbauwhede <wim@dcs.gla.ac.uk>
+
+
+#SetOption('implicit_cache', 1)
+import os
+from GprmBuilder import build
+
+GPRM_DIR=os.environ["GPRM_DIR"]
+wd=ARGUMENTS.get('wd','.')
+
+def isLocal(libname):
+	return os.path.exists(wd+'/src/GPRM/Kernel/'+libname+'.cc')
+
+libnames=ARGUMENTS.get('sclib','')
+sclibnames=libnames.split(',')
+sclibs=[]
+for libname in sclibnames:
+	libsrc=''
+	if isLocal(libname):	 
+		libsrc=wd+'/src/GPRM/Kernel/'+libname+'.cc'
+	print libsrc
+	sclibs+=[] # libsrc]
+
+sbasources=Split("""
+Bytecode.cc
+ServiceConfiguration.cc
+Packet.cc
+Base/ServiceCoreControl.cc
+Base/CoreServices.cc
+Base/Let.cc
+Services.cc
+Memory.cc
+LookupTable.cc
+TaskDescription.cc
+Tile.cc
+ServiceManager.cc
+GatewayTile.cc
+Gateway.cc
+Interface.cc
+Transceiver.cc
+System.cc
+Runtime.cc
+Timings.cc
+""")
+
+sbasources = [GPRM_DIR+'/GannetVM/src/SBA/'+s for s in sbasources]
+
+build(wd,(sclibs+sbasources))
+

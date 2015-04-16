@@ -1,0 +1,1 @@
+cpp $1 2>/dev/null | grep cout | grep -v -E '^\s*\/\/' 

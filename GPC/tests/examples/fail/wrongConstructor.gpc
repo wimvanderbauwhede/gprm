@@ -1,0 +1,3 @@
+
+GPRM::Kernel::Test test;
+test = GPRM::Kernel::Test::Wrong();

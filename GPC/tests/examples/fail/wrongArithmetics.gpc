@@ -1,0 +1,6 @@
+
+
+int wrongArithmetic() {
+    int a = 'h' * 'g';
+    return 1;
+}

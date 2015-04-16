@@ -1,0 +1,9 @@
+--- # SBA Core Library Configuration
+System:
+  Version: 3.0
+  Library: MergeSort
+
+  Services: # last value is control bit (1=control, 0=computational) 
+    MergeSort: [ 32, kernel_MergeSort, 0 ]
+  ServiceClasses:
+    MergeSort: [ array, max, ser_ms, serial_ms, merge_two, show ]

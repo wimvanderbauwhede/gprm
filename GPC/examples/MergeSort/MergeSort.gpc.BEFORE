@@ -1,0 +1,30 @@
+
+GPRM::Kernel::Mergesort MS;
+
+
+int cutoff = 1024;
+int size = 40;
+
+void MergeSort2(int *A, int *tmp, int size, int cutoff) {
+    int half = size/2;
+    int* tmpA = tmp;
+    int* B = A + half;
+    int* tmpB = tmpA + half;
+/*    
+    seq {
+        float v = sqrt(tmpA[half]);
+        float w = sqrt(tmpB[half]);
+*/    
+    if (cutoff == 1) {
+        MS.SeqSort(A, tmp, size);//,v,w);
+    } else {
+        MS.Merge(A, B, tmp, size,  
+            MergeSort2(A, tmpA, half, cutoff/2),
+            MergeSort2(B, tmpB, size-half, cutoff/2));
+    }
+//  }
+}
+
+void MergeSort(int* A, int* tmp){
+    MergeSort2(A, tmp, size, cutoff);
+}

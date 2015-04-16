@@ -1,0 +1,34 @@
+
+int GPRM::Test::arithmetic2() {
+    int xx = 4 << 3; 
+    bool yy = xx == xx;
+    double z = 5.03;
+    char ch = 'c';
+    string str = "test";
+    int bb = xx + xx - xx * xx / xx | xx & xx ^ xx >> 2;
+    bool cc = bb <= 5 && bb >= 5 || bb != 2;
+    bool dd = bb != bb;
+    
+    bool a = 5 < 4;
+    bool b = 5 > 4;
+    bool c = 5 <= 4;
+    bool d = 5 >= 4;
+    int e = ~5;
+    bool f = !true;
+    int g = -6; 
+    double x = 0.5 + 0.5;
+    double y = x + z;
+    int h = e + 10;
+    int i = e + h;
+    bool j = f == true;
+    bool k = j == f && true;
+    bool l = k || false;
+    bool m = l != k;
+    bool n = m && l;
+    double o = 0.5;
+    double p = -(x + 3.0); 
+    double r = 10.0/5.0;
+    
+    int blah = g % e;
+    return 1;    
+}

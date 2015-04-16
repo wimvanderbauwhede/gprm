@@ -1,0 +1,6 @@
+
+a = GPRM::Test::Test();
+
+int nonExistantObject() {
+    return 1;
+}

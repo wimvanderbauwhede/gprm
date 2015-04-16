@@ -1,0 +1,82 @@
+### PREREQUISITES:
+
+    ghc 7.6.3
+    perl 5.16
+    cpanm
+    cpanm YAML::Syck
+    cabal install lens
+    cabal install errors
+    cabal install wl-pprint
+    cabal install HsSyck
+    g++ 4.8
+
+
+#### Essential:
+
+Compilers
+
+- [g++ >= 4.8](http://gcc.gnu.org) for compiling the Virtual Machine and the SystemC model
+- [ghc >= 7.6.3](http://www.haskell.org) to compile the Gannet compiler
+
+Dynamic languages
+
+- [perl >= 5.12](http://www.perl.org) for various toolchains scripts
+- [python >= 2.5.1](http://www.python.org) for SCons
+
+Build tools
+
+- [scons >= 1.2.0](http://www.scons.org) for building the Virtual Machine and the SystemC model
+
+[Haskell Platform](http://hackage.haskell.org/platform/)
+
+For the Gannet assembler:
+
+- YAML::Syck from [CPAN](http://search.cpan.org/dist/YAML-Syck/)
+
+### INSTALLATION:<a name="setup"></a>
+
+    # get the archive (gprm-1.0.tgz)
+    gprm-1.0.tgz	
+    # unpack the archive 
+     tar -zxvf gprm-1.0.tgz
+
+The environment variable `GPRM_DIR` must be set to the above directory.
+The file etc/gannetrc contains the environment settings for Gannet.
+Edit this file for your system; 
+
+    $ vim etc/gannetrc
+
+then source it:
+
+    $ . etc/gannetrc
+
+That's it, you can start using Gannet -- although you'll most likely want to build
+the compiler, Virtual Machine and/or SystemC hardware model. But without building
+anything, you can write Gannet assembly, generate bytecode with the Gannet Assembler
+and run it on Garnet, the Ruby version of the Gannet machine.
+
+### BUILDING:
+
+#### Assembler:
+
+The Gannet assembler is written in Perl but you need to install YAML::Syck from CPAN:
+
+    $ cpan install YAML::Syck
+
+#### Compiler:
+
+Unless you're happy writing Gannet assembly, you'll need to build the Gannet compiler. 
+
+Then build the compiler:
+
+    $ cd Compiler
+    $ ./build.pl
+
+
+
+
+
+
+
+
+

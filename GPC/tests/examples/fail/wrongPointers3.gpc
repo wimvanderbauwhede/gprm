@@ -1,0 +1,7 @@
+
+
+void wrongPointers3(char *x) {
+    
+    char *y = x + 'h';
+
+}

@@ -1,0 +1,8 @@
+
+int x = 5;
+double y = 5.0;
+double z = y + x;
+
+int mixNumbers() {
+    return x;
+}

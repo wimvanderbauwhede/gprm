@@ -1,0 +1,34 @@
+--- # Core Services Configuration
+System:
+  Version: 3.0
+  Libraries: [_KLIBS_, CoreServices]
+  NServiceNodes: _NTHREADS_ 
+  ServiceNodes:
+    ctrl: [ 1, [CoreServices.SEQ, CoreServices.BEGIN ] ]
+    io: [ 1, [CoreServices.IO] ]
+    alu: [ 1, [CoreServices.ALU] ]
+    reg: [ 1, [CoreServices.REG ] ]
+    arg: [ 1, [CoreServices.ARG ] ]
+    tn: [ 1, [_CLASS_._CLASS_] ]
+
+  Aliases:
+  # Alias Name (case sensitive): FQN
+    par: ctrl.CoreServices.BEGIN.begin
+    seq: ctrl.CoreServices.SEQ.seq
+    display: io.CoreServices.IO.display
+    reg: reg.CoreServices.REG
+    arg: reg.CoreServices.ARG
+#    'reg.write': reg.CoreServices.REG.write
+#    'reg.read': reg.CoreServices.REG.read
+#    'reg.inc': reg.CoreServices.REG.inc
+    '+': alu.CoreServices.ALU.plus
+    '-': alu.CoreServices.ALU.minus
+    '*': alu.CoreServices.ALU.times
+    '/': d.CoreServices.ALU.over
+    '<': alu.CoreServices.ALU.lt
+    '>': alu.CoreServices.ALU.gt
+    '==': alu.CoreServices.ALU.eq
+    '!': alu.CoreServices.ALU.not
+# New aliases for object instances
+    _INST_: tn._CLASS_._CLASS_ 
+

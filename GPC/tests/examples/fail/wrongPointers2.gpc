@@ -1,0 +1,7 @@
+
+
+int wrongPointers2(int **b) {
+    int **a = b;
+    int *c = b;
+}
+

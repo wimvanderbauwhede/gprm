@@ -1,0 +1,8 @@
+
+
+double wrongTypeDecl4() {
+
+    int x = 5;
+    double y = 6.0;
+    return x <= y;
+}

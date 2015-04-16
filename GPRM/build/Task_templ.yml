@@ -1,0 +1,30 @@
+--- # Core Services Configuration
+System:
+  Version: 3.0
+  Libraries: [_KLIBS_, CoreServices]
+  NServiceNodes: _NTHREADS_ 
+  ServiceNodes:
+    core: [ 1, [CoreServices.SEQ ] ]
+    io: [ 1, [CoreServices.IO] ]
+    alu: [ 1, [CoreServices.ALU] ]
+    reg: [ 1, [CoreServices.REG ] ]
+    tn: [ 1, [NONE] ]
+
+  Aliases:
+  # Alias Name (case sensitive): FQN
+    par: ctrl.CoreServices.BEGIN.begin
+    seq: ctrl.CoreServices.SEQ.seq
+    display: io.CoreServices.IO.display
+    'reg.write': reg.CoreServices.REG.write
+    'reg.read': reg.CoreServices.REG.read
+    'reg.inc': reg.CoreServices.REG.inc
+    '+': alu.CoreServices.ALU.plus
+    '-': alu.CoreServices.ALU.minus
+    '*': alu.CoreServices.ALU.times
+    '/': d.CoreServices.ALU.over
+    '<': alu.CoreServices.ALU.lt
+    '>': alu.CoreServices.ALU.gt
+    '==': alu.CoreServices.ALU.eq
+    '!': alu.CoreServices.ALU.not
+
+

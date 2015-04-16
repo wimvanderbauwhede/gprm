@@ -1,0 +1,6 @@
+
+void errArith8() {
+    return 3 >> 3.0;
+}
+
+

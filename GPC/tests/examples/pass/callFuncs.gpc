@@ -1,0 +1,43 @@
+GPRM::Kernel::Test test;
+test = GPRM::Kernel::Test::Test();
+
+# test comment
+int m = 7;
+
+bool fun1(int a, int b, string c) {
+    int x = 4;
+    test.m1(b);
+    if (x < 4) {
+        return a == b;
+    } else {
+        for (int j = 0; j < 3; j+=1) {
+            if (j < 3) {
+                int k = 5;
+            }
+            seq {
+            }
+        }
+    }   
+    return a == b;
+}
+
+int fun2(int *a, int *b, string *c) {
+    string s = "hello";
+    bool m = fun1(2, 3, s);
+    fun1(-3, ~5, s);
+    return 2;
+}
+
+
+int fun3(int a, int *b, char c, double d, bool e) {
+    return 5;
+}
+
+bool callFuncs(int *a, int *b, string *s, char *d) {
+
+    int e = fun2(a, b, s);
+    char l = 'h';
+    fun3(20, a, 'a', 0.5, false);
+    return fun1(20, e, "hey");
+
+}

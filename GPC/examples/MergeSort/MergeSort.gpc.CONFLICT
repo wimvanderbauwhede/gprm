@@ -1,0 +1,47 @@
+GPRM::Kernel::Mergesort MS;
+
+int overall_size = 20000000; //80 million integers
+int cutoff = overall_size/2; //2048; // Set cutoff value to 2048 
+
+void Sort(int size, int index) {
+    int new_size = size/2;
+
+<<<<<<< HEAD
+void MergeSort2(int *A, int *tmp, int size, int cutoff) {
+    int half = size/2;
+    int* tmpA = tmp;
+    int* B = A + half;
+    int* tmpB = tmpA + half;
+/*    
+    seq {
+        float v = sqrt(tmpA[half]);
+        float w = sqrt(tmpB[half]);
+*/    
+    if (cutoff == 1) {
+        MS.SeqSort(A, tmp, size);//,v,w);
+    } else {
+        MS.Merge(A, B, tmp, size,  
+            MergeSort2(A, tmpA, half, cutoff/2),
+            MergeSort2(B, tmpB, size-half, cutoff/2));
+    }
+//  }
+=======
+    if (size <= cutoff) {
+        MS.serial_ms(index, size);
+    } else {
+        MS.merge_two(new_size, Sort(new_size, index), Sort(new_size, index + new_size));
+    }
+>>>>>>> 8a192484e092d274156953b90009f933eb19da7b
+}
+   // MS.merge_two(size/2, 
+   //     MS.merge_two(size/2, MS.serial_ms(0, size/4), MS.serial_ms(5, size/4)),
+   //     MS.merge_two(size/2, MS.serial_ms(10, size/4), MS.serial_ms(15, size/4))
+   // );  
+//}
+
+void GPRM_MergeSort() {
+    seq {
+        MS.array(overall_size);
+        Sort(overall_size, 0);
+    }
+}

@@ -1,0 +1,11 @@
+
+GPRM::Kernel::Test m1;
+
+void test() {
+ seq {
+    int i = m1.t();
+    {
+        int i = m1.t(i);
+    }
+ }
+}

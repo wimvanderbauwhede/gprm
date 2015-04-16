@@ -1,0 +1,32 @@
+int N = 2;
+GPRM::Kernel::Test tests[N];
+
+tests[0] = GPRM::Kernel::Test::Test(0);
+tests[1] = GPRM::Kernel::Test::Test(1);
+
+
+// Same name as source file, used as entry function
+int Test3(int *a, double *b, bool stuff) {
+    
+    int *c = a + 6; //Pointer arithmetic examples
+    double *d = b - 7;
+
+    int j = tests[0].m0(); // j is now in Kernel namespace GPRM::Kernel::int
+
+<<<<<<< HEAD:examples/Test3.gpc
+    for (int i = 0; i<=2; i+=1) {
+=======
+    for (int i = 0; i < 2; i+=1) {
+>>>>>>> cdad673bcd6bac3764480fd00e47d5b03c509dcb:examples/Miscellaneous/Test3.gpc
+        tests[i].m1(a, b, stuff, j + 5); // Can pass j into kernel methods, 
+                                         // and even use arithmetic
+    }
+
+    /* It can't be used in the current namespace however,
+     * e.g. these statements cause errors at type checking time:
+     * return j;   
+     * int k = j;
+     * if j > 5 .. */
+
+     return 0;
+}

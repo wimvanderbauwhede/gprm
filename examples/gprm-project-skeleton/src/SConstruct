@@ -1,0 +1,18 @@
+# SConstruct template for building a GPRM-compatible project without GPRM, i.e. purely sequential  
+# _YOUR_KERNEL_ is the kernel providing the methods to be used inside your GPRM task code. There can be more than one.
+# _YOUR_TASK_METHOD_ is the GPRM task code
+import os
+GPRM_DIR=os.environ['GPRM_DIR']
+
+sources=Split("""
+main.cc
+GPRM/Kernel/_YOUR_KERNEL_.cc
+GPRM/Task/_YOUR_TASK_METHOD_.cc
+""")
+
+cxx=os.environ['CXX']
+env = Environment(CXX = cxx, CXXFLAGS = ['-std=c++11','-Wall'])
+libs=[]
+LIBpaths=[]
+INCpaths=['.',GPRM_DIR+'/GPRM/src/SBA',GPRM_DIR+'/GPRM/src/',]
+prog=env.Program("main",sources,LIBS=libs,LIBPATH=LIBpaths,CPPPATH=INCpaths)

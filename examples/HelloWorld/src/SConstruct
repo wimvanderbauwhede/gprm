@@ -1,0 +1,16 @@
+
+import os
+GPRM_DIR=os.environ['GPRM_DIR']
+
+sources=Split("""
+main.cc
+GPRM/Kernel/Hello.cc
+GPRM/Task/sayHello.cc
+""")
+
+cxx=os.environ['CXX']
+env = Environment(CXX = cxx, CXXFLAGS = ['-std=c++11','-Wall'])
+libs=[]
+LIBpaths=[]
+INCpaths=['.',GPRM_DIR+'/GPRM/src/SBA',GPRM_DIR+'/GPRM/src/',]
+prog=env.Program("hellomain",sources,LIBS=libs,LIBPATH=LIBpaths,CPPPATH=INCpaths)

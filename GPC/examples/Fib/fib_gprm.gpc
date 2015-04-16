@@ -1,0 +1,29 @@
+// Fibonacci implementation in GPC
+
+//C++ info, ignored by GPCC
+#include "src/GPRM/Kernel/Fib.h"
+#define seq
+#define par
+#define __kernel
+
+// Calculate nth Fibonacci number
+int n = 10;
+
+GPRM::Kernel::Fib f;
+
+__kernel int get_fib(int n) {
+    
+    __kernel int a = f.fib(n - 1);
+    __kernel int b = f.fib(n - 2);
+    return a + b;
+}
+
+void fib_gprm() {
+    seq {
+        f.start_timer();
+        __kernel int a = get_fib(n);
+        f.timer(a);
+    }
+}
+
+

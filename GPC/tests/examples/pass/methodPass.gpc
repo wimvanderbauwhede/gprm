@@ -1,0 +1,9 @@
+
+int GPRM::Test::methodPass() {
+
+    int n1 = test.m1(42,43);
+    test.m1(test.m2());
+//    int n1 = test.m1(test.m2());    
+    return 0;
+
+}

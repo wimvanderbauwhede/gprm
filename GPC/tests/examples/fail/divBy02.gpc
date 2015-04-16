@@ -1,0 +1,7 @@
+
+GPRM::Kernel::Test test;
+
+void divBy02(int *a) {
+    double y = (1.0/0.0);
+    test.m1(y);
+}

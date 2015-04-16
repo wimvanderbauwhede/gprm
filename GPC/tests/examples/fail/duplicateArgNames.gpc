@@ -1,0 +1,5 @@
+
+
+int duplicateArgNames(int a, int a) {
+    return 1;
+}

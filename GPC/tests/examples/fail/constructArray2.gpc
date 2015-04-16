@@ -1,0 +1,9 @@
+
+GPRM::Kernel::Test a;
+
+a[0] = GPRM::Kernel::Test::Test(); // a is not an array
+
+int constructArray() {
+    return 0;
+}
+

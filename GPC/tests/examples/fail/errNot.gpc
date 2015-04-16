@@ -1,0 +1,8 @@
+
+
+
+int errNot() {
+    bool x = true;
+    bool y = ~x;
+    return 5;
+}

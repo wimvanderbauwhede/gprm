@@ -1,0 +1,8 @@
+Kernel::Mergesort MS;
+
+
+int test () {
+MS.array(100);
+}
+
+

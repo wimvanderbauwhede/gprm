@@ -1,0 +1,6 @@
+
+void errArith5() {
+    return 3 >= 3.0;
+}
+
+

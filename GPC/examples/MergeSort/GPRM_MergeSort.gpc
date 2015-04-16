@@ -1,0 +1,22 @@
+GPRM::Kernel::Mergesort MS;
+
+int overall_size = 80000000; //80 million integers
+int cutoff = 40000; 
+
+void Sort(int size, int c, int index) {
+    int new_size = size/2;
+
+    if (size <= cutoff) {
+        MS.serial_ms(c%index, size);
+    } else {
+        MS.merge_two(c%index, size, Sort(new_size, 2*c, 2*index), Sort(new_size, 2*c + 1, 2*index), Sort(new_size,2*c, 2*index));
+    }
+}
+
+// Entry Function
+void GPRM_MergeSort() {
+    seq {
+        MS.array(overall_size);
+        Sort(overall_size, 1, 1);
+    }
+}

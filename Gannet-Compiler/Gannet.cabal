@@ -1,0 +1,21 @@
+Name: Gannet
+Version: 1.0
+Cabal-Version: >= 1.2
+Build-Type: Simple
+License: GPL
+License-file: ../LICENSE
+Author: Wim Vanderbauwhede
+Maintainer: Wim.Vanderbauwhede@mail.be
+Category: Compilers
+Description: 
+             This compiler is part of the Glasgow Parallel Reduction Machine (GPRM) framework for task-based parallel programming.
+             GPIR is a functional intermediate represenation language for parallel task compostion in manycore systems. The compiler generates the bytecode for the GPRM runtime.
+Synopsis: Compiler for the GPRM Intermediate Representation language (GPIR, aka Gannet)
+copyright: Wim Vanderbauwhede
+
+
+Executable gannetc
+    Build-Depends: mtl, base, containers, parsec, HsSyck >= 0.45, directory, bytestring
+    GHC-Options: -O -fwarn-unused-binds -fwarn-unused-imports -fwarn-unused-matches -fwarn-unused-do-bind
+    Main-is: Main.hs
+    Hs-Source-Dirs: .
