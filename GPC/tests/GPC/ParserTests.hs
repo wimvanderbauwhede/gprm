@@ -39,21 +39,21 @@ objectsCheck :: [(ProgramPos , Either String ProgramPos)]
 objectsCheck = [singleObj, largeNsSingleObj, arrObjs, arrObjsSp,
                 spaceNameSpace1, spaceNameSpace2]
  where
-   singleObj = (Program [TLObjs (Objects [identPos "Test", identPos "Obj"] (VarIdent $ identPos "obj"))],
-               parseSource "Test::Obj obj;")
+   singleObj = (Program [TLObjs (Objects [identPos "GPRM", identPos "Test", identPos "Obj"] (VarIdent $ identPos "obj"))],
+               parseSource "GPRM::Test::Obj obj;")
 
    largeNsSingleObj = (Program [TLObjs (Objects (map identPos ["Test1", "Test2", "Test3", "Test4", "Obj"]) 
                             (VarIdent $ identPos "obj"))],
                       parseSource "Test1::Test2::Test3::Test4::Obj obj;")
 
-   arrObjs = (Program [TLObjs (Objects [identPos "Test", identPos "Obj"] 
+   arrObjs = (Program [TLObjs (Objects [identPos "GPRM", identPos "Test", identPos "Obj"] 
                 (VarArrayElem (identPos "obj") (ExpLit (Number srcPos (Left 10)))))],
-               parseSource "Test::Obj obj[10];")
+               parseSource "GPRM::Test::Obj obj[10];")
    
    -- Check space between array and name is skipped over
-   arrObjsSp = (Program [TLObjs (Objects [identPos "Test", identPos "Obj"] 
+   arrObjsSp = (Program [TLObjs (Objects [identPos "GPRM", identPos "Test", identPos "Obj"] 
                 (VarArrayElem (identPos "obj") (ExpLit (Number srcPos (Left 10)))))],
-               parseSource "Test::Obj obj [10];")
+               parseSource "GPRM::Test::Obj obj [10];")
 
    -- Check spaces in namespace are skipped over
    spaceNameSpace1 = (Program [TLObjs (Objects (map identPos ["Test", "A", "B"]) (VarIdent $ identPos "d"))]
@@ -67,9 +67,9 @@ objectsCheck = [singleObj, largeNsSingleObj, arrObjs, arrObjsSp,
 invalidObjsCheck :: [Either String ProgramPos]
 invalidObjsCheck = map parseSource [noNameSpace1, noNameSpace2, noVar] 
   where    
-    noNameSpace1 = "Test a;"
-    noNameSpace2 = "Stuff b[4];"
-    noVar = "Test::A::B ;"
+    noNameSpace1 = " a;"
+    noNameSpace2 = " b[4];"
+    noVar = "GPRM::Test::A::B ;"
 
 
 -- | Return expected and actual programs
@@ -231,8 +231,8 @@ funCallCheck = [noArgs, singleArgs, multiArgs, multiComplexArgs, standAlone]
     standAlone = (Program [fun [FunCallStmt $ FunCall (identPos "call") []]]
                   ,parseSource $ funStr ++ "call();" ++ "}")
 
-    fun xs = Func (NormalType srcPos False "tes") (identPos "test") [] (BlockStmt xs)
-    funStr = "tes test() {"
+    fun xs = Func (NormalType srcPos False "tes") (identPos "Test", identPos "test") [] (BlockStmt xs)
+    funStr = "tes GPRM::Test::test() {"
 
 
 -- | Check method calls made within functions are correctly parsed
@@ -270,8 +270,8 @@ methodCallCheck = [noArgs, singleArgs, multiArgs, multiComplexArgs, standAlone, 
             (identPos "call") []]]
         ,parseSource $ funStr ++ "a[2].call();" ++ "}")
 
-    fun xs = Func (NormalType srcPos False "tes") (identPos "test") [] (BlockStmt xs)
-    funStr = "tes test() {"
+    fun xs = Func (NormalType srcPos False "tes") (identPos "Test", identPos "test") [] (BlockStmt xs)
+    funStr = "tes GPRM::Test::test() {"
 
 -- | Check sequential/parallel blocks are correctly parsed
 seqParBlockCheck :: [(ProgramPos, Either String ProgramPos)]
@@ -289,8 +289,8 @@ seqParBlockCheck = [seqB, parB, seqMultiB]
             (NormalType srcPos False "int") (identPos "i") (ExpIdent (identPos "x")),
            AssignStmt $ Assign (NormalType srcPos False "int") (identPos "j") (ExpIdent (identPos "y"))])]],
            parseSource $ funStr ++ "seq {int i = x; int j = y;}" ++ "}")
-    fun xs = Func (NormalType srcPos False "tes") (identPos "test") [] (BlockStmt xs)
-    funStr = "tes test() {"
+    fun xs = Func (NormalType srcPos False "tes") (identPos "Test", identPos "test") [] (BlockStmt xs)
+    funStr = "tes GPRM::Test::test() {"
 
 -- | Check If-Else statements are correctly parsed
 ifElseCheck :: [(ProgramPos, Either String ProgramPos)]
@@ -309,8 +309,8 @@ ifElseCheck = [ifCheck, elseCheck]
                     (Return $ ExpIdent (identPos "a"))
                 )]],
                 parseSource $ funStr ++ "if (!z) return y; else return a;" ++ "}")
-    fun xs = Func (NormalType srcPos False "tes") (identPos "test") [] (BlockStmt xs)
-    funStr = "tes test() {"
+    fun xs = Func (NormalType srcPos False "tes") (identPos "Test", identPos "test") [] (BlockStmt xs)
+    funStr = "tes GPRM::Test::test() {"
 
 -- | Check For loop statements are correctly parsed
 forLoopCheck :: [(ProgramPos, Either String ProgramPos)]
@@ -321,24 +321,24 @@ forLoopCheck = [forCheck]
                 (ExpBinOp (LessEq srcPos) (ExpIdent $ identPos "a") (ExpLit $ Number srcPos $ Left 16)) (ExpLit $ Number srcPos $ Left 1) (BlockStmt []))]] 
               , parseSource $ funStr ++ "for (int a = -17; a <= 16; a+=1) {}" ++ "}") 
 
-    fun xs = Func (NormalType srcPos False "tes") (identPos "test") [] (BlockStmt xs)
-    funStr = "tes test() {"
+    fun xs = Func (NormalType srcPos False "tes") (identPos "Test", identPos "test") [] (BlockStmt xs)
+    funStr = "tes GPRM::Test::test() {"
     
 
 -- | Check Pointer
 pointersCheck :: [(ProgramPos, Either String ProgramPos)]
 pointersCheck = [singlePtr, mulPtr]
   where
-     singlePtr = (Program [Func intType (identPos "test") [(PointerType intType, a)] 
+     singlePtr = (Program [Func intType (identPos "Test", identPos "test") [(PointerType intType, a)] 
                             $ BlockStmt [AssignStmt 
                                 $ Assign (PointerType intType) b (ExpIdent a)]]
-                 ,parseSource "int test(int *a) {int *b = a;}") 
+                 ,parseSource "int GPRM::Test::test(int *a) {int *b = a;}") 
 
 
-     mulPtr = (Program [Func intType (identPos "test") [(triplePtr intType, a)] 
+     mulPtr = (Program [Func intType (identPos "Test", identPos "test") [(triplePtr intType, a)] 
                             $ BlockStmt [AssignStmt 
                                 $ Assign (triplePtr intType) b (ExpIdent a)]]
-                 ,parseSource "int test(int ***a) {int ***b = a;}") 
+                 ,parseSource "int GPRM::Test::test(int ***a) {int ***b = a;}") 
 
      intType = NormalType srcPos False "int"
      triplePtr = PointerType . PointerType . PointerType

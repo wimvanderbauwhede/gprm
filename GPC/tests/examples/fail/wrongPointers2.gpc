@@ -1,6 +1,6 @@
 
 
-int wrongPointers2(int **b) {
+int GPRM::Test::wrongPointers2(int **b) {
     int **a = b;
     int *c = b;
 }

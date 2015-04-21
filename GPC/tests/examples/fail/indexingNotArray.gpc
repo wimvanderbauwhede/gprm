@@ -1,5 +1,5 @@
 
-int indexingNotArray() {
+int GPRM::Test::indexingNotArray() {
 
     int x = 5;
     x[false].m1();

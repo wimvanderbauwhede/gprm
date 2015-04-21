@@ -4,7 +4,7 @@ test = GPRM::Kernel::Test::Test();
 # test comment
 int m = 7;
 
-bool fun1(int a, int b, string c) {
+bool GPRM::Test::fun1(int a, int b, string c) {
     int x = 4;
     test.m1(b);
     if (x < 4) {
@@ -21,7 +21,7 @@ bool fun1(int a, int b, string c) {
     return a == b;
 }
 
-int fun2(int *a, int *b, string *c) {
+int GPRM::Test::fun2(int *a, int *b, string *c) {
     string s = "hello";
     bool m = fun1(2, 3, s);
     fun1(-3, ~5, s);
@@ -29,11 +29,11 @@ int fun2(int *a, int *b, string *c) {
 }
 
 
-int fun3(int a, int *b, char c, double d, bool e) {
+int GPRM::Test::fun3(int a, int *b, char c, double d, bool e) {
     return 5;
 }
 
-bool callFuncs(int *a, int *b, string *s, char *d) {
+bool GPRM::Test::callFuncs(int *a, int *b, string *s, char *d) {
 
     int e = fun2(a, b, s);
     char l = 'h';

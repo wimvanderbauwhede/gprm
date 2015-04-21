@@ -1,6 +1,6 @@
 GPRM::Kernel::Test m;
 
-int ifstmt(int i) {
+int GPRM::Test::ifstmt(int i) {
     if (i > 5) {
         return 3;
     }

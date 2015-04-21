@@ -1,7 +1,7 @@
 
 GPRM::Kernel::Test test;
 
-int forLoop() {
+int GPRM::Test::forLoop() {
     seq {
 
     for(int j = 2; j < 10; j += 1) {

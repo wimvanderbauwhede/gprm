@@ -1,6 +1,6 @@
 
 
-int pointers(int **a, int *b, int c) {
+int GPRM::Test::pointers(int **a, int *b, int c) {
     int **d = a + 6;
     int **e = a - 6;
     int *f = b + 6;

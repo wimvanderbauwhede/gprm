@@ -1,6 +1,6 @@
 
 
-int errNeg() {
+int GPRM::Test::errNeg() {
     
     bool x = true;
     int y = -x;

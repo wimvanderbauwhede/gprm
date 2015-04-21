@@ -1,6 +1,6 @@
 
 
-void errArith3() {
+void GPRM::Test::errArith3() {
     return 3 | 3.0;
 }
 

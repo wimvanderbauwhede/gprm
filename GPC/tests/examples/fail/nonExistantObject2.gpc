@@ -1,7 +1,0 @@
-
-
-int nonExistantObject2() {
-    
-    obj.m1(); 
-    return 0;
-}

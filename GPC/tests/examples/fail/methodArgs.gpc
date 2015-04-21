@@ -2,6 +2,6 @@
 
 GPRM::Kernel::Test t;
 
-void methodArgs() {
+void GPRM::Test::methodArgs() {
     bool a = t.m1(True || true);
 }

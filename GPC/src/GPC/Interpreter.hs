@@ -217,17 +217,34 @@ genEntryFunc (BlockStmt stmts) args = do
 --  the registers used. As well we need to check if a return is made that
 --  we exit to the calling function of the current function. We may be
 --  several blocks in a function.
+
+-- type GenState a = StateT CodeGen (Either String) a
+-- runStateT :: StateT CodeGen (Either String) a -> CodeGen -> (Either String) (a, CodeGen)
+-- g :: StateT CodeGen (Either String) a 
+-- curEnv :: CodeGen
+-- res :: a
+-- afterEnv :: CodeGen
+
+-- when :: Monad m => Bool -> m () -> m ()
+
+-- return res puts res into the monad, so it is StateT CodeGen (Either String) a
+-- If I want the env out of this, I need to call runStateT on this, unless I could pattern match?
+-- StateT env _ _ = ... 
+-- So what this function does is update the env after running g (with seqBlock set to sequential)
+
+-- stmt1' :: GenState a
+
 genNest :: Bool -> Bool -> GenState a -> GenState a
 genNest sequential isTopScopeFun g = do
-    curEnv <- get
+    curEnv <- get -- CodeGen
     case runStateT g curEnv{_seqBlock = sequential}  of
         Left e -> lift $ Left e
         Right (res, afterEnv) -> do
-            assign varId (_varId afterEnv)
-            assign threadCount (_threadCount afterEnv)
+            assign varId (_varId afterEnv) -- modify afterEnv.varId
+            assign threadCount (_threadCount afterEnv) -- modify afterEnv.threadCount
             -- If Returning, and the current scope isn't at the top level
             -- of a function then we continue returning
-            when ((_isReturning afterEnv) && (not isTopScopeFun)) (assign isReturning True)
+            when ((_isReturning afterEnv) && (not isTopScopeFun)) (assign isReturning True)  -- modify afterEnv.isReturning
             return res
 
 
@@ -289,18 +306,48 @@ genSeqBlock = genBlock True "seq"
 genParBlock :: BlockStmt -> Bool -> GenState SymbolTree
 genParBlock = genBlock False "par"
 
+{-
+The problem appears to be in the genBlock function in the Interpreter module, more specifically these two lines:  
 
+stmt1' <- genNest isSeq False $ genStmt True (head stmts)
+stmts' <- genNest isSeq False $ mapM (genStmt False) (takeWhileInclusive (not . isReturn) (tail stmts))
+
+The genNest function causes nesting of the current scope for the given block of statements. 
+In this case the head of the statements is being evaluated in a nested scope separate from the tail.
+Once the first assignment statement is evaluated in genNest, the scope is returned and k_seq is removed from the constant symbol table.
+Then the rest of the statements are evaluated in their own block, k_seq isn't in scope when attempting to substitute for a constant so a lookup is performed
+in the register table and that fails which is what generates the error. 
+
+For example this code manages to compile correctly:
+
+void GPRM::Test::blocks1() {
+   seq {
+       int dummy_var  = 4;
+       int k_seq = 6;
+       int v = k_seq*3;
+   }
+}
+
+-}
 -- | Generic Block generate
 genBlock :: Bool -> String -> BlockStmt -> Bool -> GenState SymbolTree
 genBlock isSeq symName (BlockStmt stmts) quoted = do
-    let symbol = Symbol $ ConstSymbol False symName
-    -- Entering a block, need to nest
-    stmt1' <- genNest isSeq False $ genStmt True (head stmts)
-    stmts' <- genNest isSeq False $ mapM (genStmt False) (takeWhileInclusive (not . isReturn) (tail stmts))
-    if length stmts' > 0
-        then return $ SymbolList quoted (symbol : stmt1' : stmts')
-        else return $ SymbolList quoted [stmt1']
-
+    let 
+        symbol = Symbol $ ConstSymbol False symName
+        -- first symbol is first child, others are not
+        stmts_fc = zip stmts (True:(take (length stmts - 1) (repeat False))) 
+    -- Entering a block, need to nest    
+    stmts' <- genNest isSeq False $ mapM (\(stmt,fc) -> genStmt fc stmt) (takeWhileInclusive (\(stmt,_) -> (not (isReturn stmt))) stmts_fc)
+--    stmts' <- genNest isSeq False $ mapM (genStmt False) (takeWhileInclusive (\z -> not (isReturn z)) stmts)
+--    stmt1' <- genNest isSeq False $ genStmt True (head stmts) -- So I think I need to use this env in the next line
+--    stmts' <- genNest isSeq False $ mapM (genStmt False) (takeWhileInclusive (not . isReturn) (tail stmts))
+--    if length stmts' > 0
+--        then return $ SymbolList quoted (symbol : stmt1' : stmts')
+--        else return $ SymbolList quoted [stmt1']
+    if length stmts' > 1
+        then return $ SymbolList quoted (symbol : stmts')
+        else return $ SymbolList quoted stmts'
+        
 -- | Evaluate function call, and interpret function
 genFunCall :: FunCall -> Bool -> GenState SymbolTree
 genFunCall (FunCall name exprs) quoted = do

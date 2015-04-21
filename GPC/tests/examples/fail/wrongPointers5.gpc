@@ -1,5 +1,5 @@
 
-void wrongPointers5(double *d) {
+void GPRM::Test::wrongPointers5(double *d) {
     
     double* e = d == 0.53;
 

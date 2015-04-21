@@ -1,9 +1,9 @@
 
 
-int fun() {
+int GPRM::Test::fun() {
     return 1;
 }
 
-void wrongArgCount() {
+void GPRM::Test::wrongArgCount() {
     fun(23);
 }

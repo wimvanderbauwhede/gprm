@@ -3,6 +3,6 @@ GPRM::Kernel::Test a;
 
 a = GPRM::Kernel::Blah::Blah();
 
-int wrongNamespace() {
+int GPRM::Test::wrongNamespace() {
     return 0;
 }

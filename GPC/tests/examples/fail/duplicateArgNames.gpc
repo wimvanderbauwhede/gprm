@@ -1,5 +1,5 @@
 
 
-int duplicateArgNames(int a, int a) {
+int GPRM::Test::duplicateArgNames(int a, int a) {
     return 1;
 }

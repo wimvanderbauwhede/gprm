@@ -5,6 +5,6 @@ test = GPRM::Kernel::Test::Test();
 //TODO Possibly change so int is "upcasted" to kernel type
 int x = test.m1();
 
-int nonConstantTopLevel() {
+int GPRM::Test::nonConstantTopLevel() {
     return 0;
 }

@@ -1,6 +1,6 @@
 
 
-int methodNoObject() {
+int GPRM::Test::methodNoObject() {
     
     int x = 5;
     x.m1();

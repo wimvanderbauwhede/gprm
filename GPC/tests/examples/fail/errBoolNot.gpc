@@ -1,5 +1,5 @@
 
-int errBoolNot() {
+int GPRM::Test::errBoolNot() {
     
     int x = 5;
     bool y = !x;

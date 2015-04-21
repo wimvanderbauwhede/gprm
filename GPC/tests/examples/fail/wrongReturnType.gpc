@@ -1,5 +1,5 @@
 
 
-int wrongReturnType() {
+int GPRM::Test::wrongReturnType() {
     return false;
  }

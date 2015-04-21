@@ -1,11 +1,11 @@
 
 GPRM::Kernel:: A a;
 
-void test(int a, int*b) {
+void GPRM::Test::test(int a, int*b) {
     notInscope2(a, b);
 }
 
-void notInscope2(int *a) {
+void GPRM::Test::notInscope2(int *a) {
     test(5, a);    
 }
 

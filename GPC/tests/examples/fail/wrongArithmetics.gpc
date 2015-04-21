@@ -1,6 +1,6 @@
 
 
-int wrongArithmetic() {
+int GPRM::Test::wrongArithmetic() {
     int a = 'h' * 'g';
     return 1;
 }

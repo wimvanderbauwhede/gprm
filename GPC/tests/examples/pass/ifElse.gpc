@@ -1,6 +1,6 @@
 
 
-int ifElse(int i) {
+int GPRM::Test::ifElse(int i) {
     
     string s = "hello";
     char c = 'b';

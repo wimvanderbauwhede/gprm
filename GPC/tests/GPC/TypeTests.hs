@@ -62,7 +62,7 @@ failExpressions = [(ExpBinOp (Less srcPos) (intConst 10) (doubleConst 20.0))
 
 programTempl stmts = Program 
     [TLObjs $ Objects (map (Ident srcPos) ["GPRM","Kernel","A"]) (VarIdent $ Ident srcPos "obj")    
-    ,Func (intTypeNK) (Ident srcPos "test") [] $ BlockStmt stmts
+    ,Func (intTypeNK) (Ident srcPos "Test",Ident srcPos "test") [] $ BlockStmt stmts
     ]
 
 methodCalls = map programTempl 
@@ -82,7 +82,7 @@ expectedTCMethodCalls = map programTempl
     ]
 
 -- Check Pointers type checked correctly, and reduced
-pointerProgramTempl stmts = Program [Func (intTypeNK) (Ident srcPos "test") 
+pointerProgramTempl stmts = Program [Func (intTypeNK) (Ident srcPos "Test", Ident srcPos "test") 
                                 [(PointerType intTypeNK, Ident srcPos "a")] $ BlockStmt stmts]
 pointerAssigns = map pointerProgramTempl
     [[AssignStmt $ Assign (PointerType intTypeNK) (Ident srcPos "b")
@@ -120,12 +120,12 @@ multipleDefInScope =
              ,TLAssign (Assign intTypeNK (Ident srcPos "i") (intConst 3))
              ]
      -- Check function arguments not duplicated    
-     ,Program [Func (intTypeNK) (Ident srcPos "mulArgsTest") 
+     ,Program [Func (intTypeNK) (Ident srcPos "Test", Ident srcPos "mulArgsTest") 
                 [(intTypeNK, Ident srcPos "a"), (boolTypeNK, Ident srcPos "a")] $ BlockStmt []
               ]                
      -- Check function argument, not also present in main
      -- function block
-     ,Program [Func (intTypeNK) (Ident srcPos "argsFunDups") [(boolTypeNK, Ident srcPos "b")] $ BlockStmt
+     ,Program [Func (intTypeNK) (Ident srcPos "Test", Ident srcPos "argsFunDups") [(boolTypeNK, Ident srcPos "b")] $ BlockStmt
                 [AssignStmt $ Assign intTypeNK (Ident srcPos "b") (intConst 42)]
               ]
      ]                  

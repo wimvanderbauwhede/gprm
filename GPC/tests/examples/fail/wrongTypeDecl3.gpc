@@ -1,6 +1,6 @@
 
 
-bool wrongTypeDecl3() {
+bool GPRM::Test::wrongTypeDecl3() {
 
     bool x = false;
     int a = 5;

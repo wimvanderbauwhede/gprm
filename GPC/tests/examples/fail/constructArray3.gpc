@@ -3,6 +3,6 @@
 GPRM::Kernel::Test a[3];
 GPRM::Kernel::Test a[3];
 
-int constructArray3() {
+int GPRM::Test::constructArray3() {
     return 0;
 }

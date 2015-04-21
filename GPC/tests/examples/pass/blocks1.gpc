@@ -3,15 +3,18 @@ void GPRM::Test::blocks1() {
     seq {
         int k_seq = 6;
         int v = k_seq*3;
+        t1.m1(v);
     }
 
     {
         int k_bare = 5;
         bool v = k_bare == 3;
+        t1.m1(v);
     }
 
     par {
         int k_par = 6;
         int v = k_par*3;
+        t1.m1(v);
     }
 }

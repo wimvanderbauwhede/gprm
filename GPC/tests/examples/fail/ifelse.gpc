@@ -1,5 +1,5 @@
 
-void ifelse() {
+void GPRM::Test::ifelse() {
 
     if (true) {
         int i = 4;

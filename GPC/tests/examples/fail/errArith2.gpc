@@ -1,5 +1,5 @@
 
-int errArith2() {
+int GPRM::Test::errArith2() {
     return 3 / 3.0;
 }
 

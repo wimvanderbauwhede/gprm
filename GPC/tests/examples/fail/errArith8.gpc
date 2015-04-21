@@ -1,5 +1,5 @@
 
-void errArith8() {
+void GPRM::Test::errArith8() {
     return 3 >> 3.0;
 }
 

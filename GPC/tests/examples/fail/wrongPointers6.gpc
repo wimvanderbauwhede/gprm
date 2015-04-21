@@ -1,6 +1,6 @@
 
 
-void wrongPointers6(int *e, char *f) {
+void GPRM::Test::wrongPointers6(int *e, char *f) {
 
     bool b = e == f;
 

@@ -2,6 +2,6 @@
 GPRM::Kernel::Test a;
 GPRM::Kernel::Test2 a;
 
-int multipleObjectDecls() {
+int GPRM::Test::multipleObjectDecls() {
     return 0;
 }

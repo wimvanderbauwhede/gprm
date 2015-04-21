@@ -2,7 +2,7 @@
 GPRM::Kernel::Test test;
 test = GPRM::Kernel::Test::Test();
 
-int tainting() {
+int GPRM::Test::tainting() {
    int y = test.m1();
    return y; 
 }

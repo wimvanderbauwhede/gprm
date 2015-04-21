@@ -3,7 +3,7 @@ GPRM::Kernel::Test a;
 
 a[0] = GPRM::Kernel::Test::Test(); // a is not an array
 
-int constructArray() {
+int GPRM::Test::constructArray() {
     return 0;
 }
 
