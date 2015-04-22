@@ -17,7 +17,7 @@ our $task_name='Task';
 
 
 sub generate {
-    my ($libname,$nclasses,$is_core, my $task_name, my $task_path) =@_;
+    my ($libname,$nclasses,$is_core, my $task_name, my $task_path, my $opts) =@_;
     my $kernel_classes={};
 	if ($libname ne 'CoreServices') {
         $kernel_classes = parse_class_header($libname, $src_path);
@@ -29,7 +29,7 @@ sub generate {
 	
 	my @task_methods = gen_task_wrapper($task_name, $task_path);
 	
-	generate_scons([$task_name],$kernel_classes);
+	generate_scons([$task_name],$kernel_classes, $opts);
 	return @task_methods;
 } # END of generate()
 
@@ -117,6 +117,7 @@ using namespace SBA;
 	my @lines=();	
 	my $ctor_args=''; # FIXME
 #		my $libname=$class; # FIXME: in principle they could be different
+ 
 	my $sig_preamble_line =
 "#include \"Services.h\"
 $comment#include \"$libname.h\" 
@@ -146,6 +147,12 @@ void Services::kernel_${class}() {
 
     void* res;
 	Symbol_t res_symbol = NIHIL;
+#ifdef KERNEL_HAS_STATE	
+#ifdef KERNEL_LOCK
+    pthread_mutex_t mutex = get_mutex(SC_${libname}_${class});
+    pthread_mutex_lock (&mutex);
+#endif	
+#endif
     switch ( method() ) {
 ";
 
@@ -184,6 +191,11 @@ void Services::kernel_${class}() {
 		default:
 			std::cout << \"ERROR: NO SUCH METHOD: \" << method() << \"for class $class\\n\";
     };
+#ifdef KERNEL_HAS_STATE    
+#ifdef KERNEL_LOCK
+    pthread_mutex_unlock (&mutex);
+#endif    
+#endif
     result(res_symbol);
 }	
 ";
@@ -419,12 +431,42 @@ sub cast_args_res { (my $sig)=@_;
 }
 
 sub generate_scons {
-(my $task_methods, my $kernel_classes) = @_;    
+(my $task_methods, my $kernel_classes, my $opts) = @_;    
+    my $kernel_has_state= exists $opts->{'stateful'}? "'-DKERNEL_HAS_STATE'," : '';
+    my $kernel_lock= exists $opts->{'locking'}? "'-DKERNEL_LOCK'," : '';
+    my $use_threads = exists $opts->{'nothreads'} ? '' : "'-DUSE_THREADS=1',";
+    if (not -e 'GprmConfig.py') {
+        my @gprm_srcs=();
+            for my $task_name  (@{$task_methods}) {
+        push  @gprm_srcs, "'gensrc/$task_name.cc'";
+    }
+    my $gprm_sources=join(',',@gprm_srcs);
+        
+    open my $SCONS, '>', 'GprmConfig.py';
+    print $SCONS '        
+import os
+from SCons.Environment import Environment
+
+def gprmConfigEnv():
+    GPRM_DIR=os.environ["GPRM_DIR"]
+
+    gprmSources=['.$gprm_sources.']
+    cxx=os.environ["CXX"]
+    libs=["gannet"]
+    LIBpaths=["./lib"]
+    INCpaths=["./src","./src/GPRM","./gensrc",GPRM_DIR+"/GPRM/src/SBA",GPRM_DIR+"/GPRM/src",]
+
+    gprmEnv = Environment(CXX = cxx, CXXFLAGS = ['."$use_threads $kernel_has_state $kernel_lock ".'"-DGPRM_API","-O2","-std=c++11","-Wall"],LIBS=libs,LIBPATH=LIBpaths,CPPPATH=INCpaths, GPRMSRC=gprmSources)
+    return gprmEnv
+';
+close $SCONS;            
+    }
     if (not -e 'SConstruct.gprm') {
         open my $SCONS, '>', 'SConstruct.gprm';
         print $SCONS '
-import os
-GPRM_DIR=os.environ["GPRM_DIR"]
+from GprmConfig import gprmConfigEnv
+
+env = gprmConfigEnv()
 
 sources=Split("""
 src/main.cc
@@ -432,19 +474,10 @@ src/main.cc
         for my $kernel (keys %{$kernel_classes}) {
             say $SCONS "src/GPRM/Kernel/$kernel.cc";
         }
-        for my $task_name  (@{$task_methods}) {
-            say  $SCONS "gensrc/$task_name.cc";
-        }
         print $SCONS '""")
-
-cxx=os.environ["CXX"]
-env = Environment(CXX = cxx, CXXFLAGS = [ "-DUSE_THREADS=1", "-DGPRM_API","-O2","-std=c++11","-Wall"])
-libs=["gannet"]
-LIBpaths=["./lib"]
-INCpaths=["./src","./src/GPRM","./gensrc",GPRM_DIR+"/GPRM/src/SBA",GPRM_DIR+"/GPRM/src",]
-prog=env.Program("main",sources,LIBS=libs,LIBPATH=LIBpaths,CPPPATH=INCpaths)
-';    
-    
+sources+=env["GPRMSRC"]
+prog=env.Program("main",sources)        
+';        
         close $SCONS;    
     }
 }

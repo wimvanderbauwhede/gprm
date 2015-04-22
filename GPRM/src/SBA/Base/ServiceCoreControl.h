@@ -71,6 +71,12 @@ class ServiceCoreControl {
  bool init_state(unsigned int service_id);
  void store_state(unsigned int service_id,void*);
  void* load_state(unsigned int service_id);
+#ifdef KERNEL_HAS_STATE
+#ifdef KERNEL_LOCK
+ pthread_mutex_t get_mutex(unsigned int service_id);
+#endif
+#endif
+
  // Cast a Word to some type, this should be a template function, taking a Word!
  Word_List* unpack(Word);
  // cast a pointer to Word, i.e. a uint64_t

@@ -238,7 +238,7 @@ parseIdentNoNS = do  -- Ident <$> getPos <*> ident
     ns' <- parseIdent
     let
         (Ident pos ns'') = ns'
-        _:tn:fn:[] = splitDelim "::" ns'' -- if the name is not "GPRM::<TaskName>::<FunctionName>" then it's an error
+        _:tn:fn:[] = splitDelim "::" ns'' -- if the name is not "GPRM::<TaskName>::<FunctionName>" then it's an error, need a proper error message here
     return ((Ident pos tn),(Ident pos fn))    
 
 

@@ -40,6 +40,13 @@ class System : public Base::System {
 	Bytecode     bytecode;
 	std::vector<void*> args;
 	std::vector<Word> regs;
+#ifdef KERNEL_HAS_STATE
+#if USE_THREADS==1
+	std::unordered_map<unsigned int,std::pair<pthread_mutex_t,void*> > kernels;
+#else
+	std::unordered_map<unsigned int,std::pair<unsigned int,void*> > kernels;
+#endif
+#endif
 	void* result;
 	uint io_mech;
 	uint multi_ip;

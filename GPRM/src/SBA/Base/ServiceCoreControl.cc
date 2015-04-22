@@ -155,29 +155,53 @@ void Base::ServiceCoreControl::reset_current_subtask() {
 
 
  bool Base::ServiceCoreControl::init_state(unsigned int service_id) {
-/*
-        if (_state_register[0]==0){
-            _state_register[0]=1;
-            return true;
-        } else {
-            return false;
-        }
-*/
+#ifdef KERNEL_HAS_STATE
+ SBA::System& sba_system=*((SBA::System*)sba_system_ptr);
+ if (sba_system.kernels.count(service_id)==0) {
+	 // NOTE: the first slot in the pair is for a mutex lock, in case we want to have proper locking
+	 // It is unused as I expect the programmer to use seq to control access.
+	 	 sba_system.kernels[service_id]=std::make_pair((pthread_mutex_t)PTHREAD_MUTEX_INITIALIZER,(void*)nullptr);
+		return true;
+ } else {
+	 	return false;
+ }
+#else
 	 	if (_state_register.isEmpty(service_id)) {
 	 		_state_register.init(service_id);
 	 		return true;
 	 	} else {
 	 		return false;
 	 	}
+#endif
 }
 
  void Base::ServiceCoreControl::store_state(unsigned int service_id,void* state) {
+#ifdef KERNEL_HAS_STATE
+	 SBA::System& sba_system=*((SBA::System*)sba_system_ptr);
+	 sba_system.kernels[service_id].second=state;
+#else
+
 	 _state_register.putvp(service_id,state);
+#endif
     }
 
  void* Base::ServiceCoreControl::load_state(unsigned int service_id) {
+#ifdef KERNEL_HAS_STATE
+	 SBA::System& sba_system=*((SBA::System*)sba_system_ptr);
+	 return sba_system.kernels[service_id].second;
+#else
+
          return _state_register.getvp(service_id);
+#endif
     }
+#ifdef KERNEL_HAS_STATE
+#ifdef KERNEL_LOCK
+ pthread_mutex_t Base::ServiceCoreControl::get_mutex(unsigned int service_id) {
+	 SBA::System& sba_system=*((SBA::System*)sba_system_ptr);
+	 	 return sba_system.kernels[service_id].first;
+ }
+#endif
+#endif
 
  Word_List* Base::ServiceCoreControl::unpack(Word w) {
          void* v_p = (void*)w;

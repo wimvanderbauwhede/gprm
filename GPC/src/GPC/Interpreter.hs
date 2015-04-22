@@ -335,15 +335,15 @@ genBlock isSeq symName (BlockStmt stmts) quoted = do
     let 
         symbol = Symbol $ ConstSymbol False symName
         -- first symbol is first child, others are not
-        stmts_fc = zip stmts (True:(take (length stmts - 1) (repeat False))) 
     -- Entering a block, need to nest    
-    stmts' <- genNest isSeq False $ mapM (\(stmt,fc) -> genStmt fc stmt) (takeWhileInclusive (\(stmt,_) -> (not (isReturn stmt))) stmts_fc)
---    stmts' <- genNest isSeq False $ mapM (genStmt False) (takeWhileInclusive (\z -> not (isReturn z)) stmts)
 --    stmt1' <- genNest isSeq False $ genStmt True (head stmts) -- So I think I need to use this env in the next line
 --    stmts' <- genNest isSeq False $ mapM (genStmt False) (takeWhileInclusive (not . isReturn) (tail stmts))
 --    if length stmts' > 0
 --        then return $ SymbolList quoted (symbol : stmt1' : stmts')
 --        else return $ SymbolList quoted [stmt1']
+    let
+        stmts_fc = zip stmts (True:(take (length stmts - 1) (repeat False)))
+    stmts' <- genNest isSeq False $ mapM (\(stmt,fc) -> genStmt fc stmt) (takeWhileInclusive (\(stmt,_) -> (not (isReturn stmt))) stmts_fc)
     if length stmts' > 1
         then return $ SymbolList quoted (symbol : stmts')
         else return $ SymbolList quoted stmts'

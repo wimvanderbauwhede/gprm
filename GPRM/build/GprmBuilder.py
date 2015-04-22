@@ -53,6 +53,8 @@ def build(wd,sources):
     use_mic = False
     # E ashkan
     STEAL=''
+    KERNEL_HAS_STATE=''
+    KERNEL_LOCK=''
     THREADED_CORE='' # 'THREADED_CORE=0'
     threaded_core = False
     # Count CPU cycles
@@ -109,6 +111,8 @@ def build(wd,sources):
     opts.Add('lib', 'Compile as a library named gannet ',0)
     opts.Add('shlib', 'Compile as a shared library named gannet ',0)
     opts.Add('steal', 'Enable task stealing',0)
+    opts.Add('stateful', 'For stateful kernels',0)    
+    opts.Add('locking', 'Always lock access to stateful kernels',0)    
     opts.Add('wordsz', 'Set WORDSZ',64)
     opts.Add('ptcore', 'Use POSIX Threaded Core',0)    
     opts.Add('dbg', 'Debug',0)
@@ -185,6 +189,10 @@ def build(wd,sources):
             SHLIB=True
         if option.key == 'steal' and opts.args.has_key(option.key) and opts.args[option.key]!=option.default:
             STEAL='STEAL=1'
+        if option.key == 'stateful' and opts.args.has_key(option.key) and opts.args[option.key]!=option.default:
+            KERNEL_HAS_STATE='KERNEL_HAS_STATE=1'            
+        if option.key == 'locking' and opts.args.has_key(option.key) and opts.args[option.key]!=option.default:
+            KERNEL_LOCK='KERNEL_LOCK=1'            
         if option.key == 'pthreads' and opts.args.has_key(option.key) and opts.args[option.key]!=option.default:
             USE_THREADS='USE_THREADS=1'
             use_pthreads=True
@@ -228,7 +236,7 @@ def build(wd,sources):
     SWITCHES=''
     flags+=[CXX0X,WARN,DEBUG,ARCH,PIC,OPT,PTHREADS]
     # Ashkan added USE_TILERA
-    switches+=[VERBOSE,SEQVM,WORDSZ,CYCLES,TIMINGS,STATIC_ALLOC,NO_SOCKET,USE_THREADS,THREADED_CORE,DISTR, STEAL, USE_TILERA, USE_MIC]+MACROS
+    switches+=[VERBOSE,SEQVM,WORDSZ,CYCLES,TIMINGS,STATIC_ALLOC,NO_SOCKET,USE_THREADS,THREADED_CORE,DISTR, STEAL, KERNEL_HAS_STATE, KERNEL_LOCK, USE_TILERA, USE_MIC]+MACROS
     for flag in flags:
         if flag !='':
             FLAGS+=flag+' '
