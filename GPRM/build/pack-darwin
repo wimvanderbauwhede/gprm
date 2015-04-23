@@ -1,0 +1,3 @@
+pp -v -o ../../bin/gprm-darwin ./build.pl 
+pp -v -o ../../bin/genSysConfig-darwin ./Cxx_SystemConfigurationOO.pl 
+

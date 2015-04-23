@@ -54,11 +54,13 @@ sub loadLibraryConfig {
     my $libcfg;
     if ( -e "$SBA_WD/gensrc/$lib.yml" ) {
         $libcfg = YAML::Syck::LoadFile("$SBA_WD/gensrc/$lib.yml");
+#        $libcfg = YAML::Tiny->read("$SBA_WD/gensrc/$lib.yml");
     } elsif ( -e "${SBA_WD}/src/GPRM/Kernel/${lib}.yml" ) {
         $libcfg = YAML::Syck::LoadFile("$SBA_WD/src/GPRM/Kernel/$lib.yml");
+#        $libcfg = YAML::Tiny->read("$SBA_WD/src/GPRM/Kernel/$lib.yml");
     } elsif ( -e $ENV{'GPRM_DIR'} . "/GPRM/src/SBA/Base/$lib.yml" ) {
-        $libcfg = YAML::Syck::LoadFile(
-            $ENV{'GPRM_DIR'} . "/GPRM/src/SBA/Base/$lib.yml" );
+        $libcfg = YAML::Syck::LoadFile($ENV{'GPRM_DIR'} . "/GPRM/src/SBA/Base/$lib.yml" );
+#        $libcfg = YAML::Tiny->read($ENV{'GPRM_DIR'} . "/GPRM/src/SBA/Base/$lib.yml" );
     } else {
         die "Can't find Library Config File ${lib}.yml";
     }
@@ -74,6 +76,7 @@ sub loadLibraryConfig {
 
 say "GENERATING SystemConfiguration" if $VERBOSE;
 my $appcfg        = YAML::Syck::LoadFile($SBA_YML);
+#my $appcfg        = YAML::Tiny->read($SBA_YML);
 my $libs          = $appcfg->{'System'}{'Libraries'};
 my $n_cfg         = $appcfg->{'System'}{'NServiceNodes'};
 my $n_actual      = scalar keys %{ $appcfg->{'System'}{'ServiceNodes'} };

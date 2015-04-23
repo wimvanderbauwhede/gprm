@@ -1,0 +1,3 @@
+pp -v -o ../../bin/gprm-linux ./build.pl 
+pp -v -o ../../bin/genSysConfig-linux ./Cxx_SystemConfigurationOO.pl 
+
