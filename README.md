@@ -1,27 +1,33 @@
 # gprm
 
-The Glasgow Parallel Reduction Machine, a task-based parallel programming framework. Parallel programming finally made easy!
-
+## Parallel programming finally made easy!
+The Glasgow Parallel Reduction Machine, *GPRM*,  is a task-based parallel programming framework.
 
 
 ## PREREQUISITES:
 
+The essential prerequisites are a C++11 compliant compiler and the SCons build system.
+
 ### Compilers
 
 - [g++ >= 4.8](http://gcc.gnu.org) for compiling the Virtual Machine and the SystemC model
-- [ghc >= 7.6.3](http://www.haskell.org) to compile the Gannet compiler
 
 ### Dynamic languages
 
-- [perl >= 5.12](http://www.perl.org) installed in `/usr/bin/perl`
+- [perl >= 5.12](http://www.perl.org)
 - [python >= 2.5.1](http://www.python.org) for SCons
 
 ### Build tools
 
 - [scons >= 1.2.0](http://www.scons.org) for building the Virtual Machine and the SystemC model
 
-### Libraries
+### To build the GPRM framework from sources (optional)
 
+There is no real need to build the framework unless you want to tinker with it. In that case you also need:
+
+#### Haskell
+
+- [ghc >= 7.6.3](http://www.haskell.org) to compile the Gannet compiler,
 - Install the [Haskell Platform](http://hackage.haskell.org/platform/)
 
 - Install the following Haskell packages with `cabal`:
@@ -30,6 +36,8 @@ The Glasgow Parallel Reduction Machine, a task-based parallel programming framew
     $ cabal install errors
     $ cabal install wl-pprint
     $ cabal install HsSyck
+
+#### Perl
 
 - Install the YAML::Syck Perl module from [CPAN](http://search.cpan.org/dist/YAML-Syck/), the easiest way is to install `cpanm` first, then do
 
@@ -45,9 +53,11 @@ The environment variable `GPRM_DIR` must be set to full path to the `gprm` direc
     $ export GPRM_DIR=$PWD
 
 The file `etc/gprmc` contains the environment settings for GPRM.
-To source it:
+To source it, put
 
-    $ . $GPRM_DIR/etc/gprmrc
+    source "$GPRM_DIR/etc/gprmrc"
+
+in your `.bashrc` (Linux) or `.profile` (Mac)
 
 That's it, you can start using GPRM!
 
