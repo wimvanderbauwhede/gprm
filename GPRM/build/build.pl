@@ -110,7 +110,7 @@ if ( $help or $no_args) {
 
 #my $wd=cwd();
 if ($init) {    
-    system("tar -zxvf $gannet_dir/GPRM/gprm-project-skeleton.tgz");
+    system("tar -zxvf $gannet_dir/examples/gprm-project-skeleton.tgz");
 }
 
 if ($init or not -e "$gannet_dir/bin/gpcc-$platform") {    
