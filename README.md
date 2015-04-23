@@ -10,16 +10,13 @@ The essential prerequisites are a C++11 compliant compiler and the SCons build s
 
 ### Compilers
 
-- [g++ >= 4.8](http://gcc.gnu.org) for compiling the Virtual Machine and the SystemC model
+- [g++ >= 4.8](http://gcc.gnu.org)
 
-### Dynamic languages
-
-- [perl >= 5.12](http://www.perl.org)
-- [python >= 2.5.1](http://www.python.org) for SCons
 
 ### Build tools
 
-- [scons >= 1.2.0](http://www.scons.org) for building the Virtual Machine and the SystemC model
+- [scons >= 1.2.0](http://www.scons.org)
+- [python >= 2.5.1](http://www.python.org)
 
 ### To build the GPRM framework from sources (optional)
 
@@ -39,6 +36,7 @@ There is no real need to build the framework unless you want to tinker with it. 
 
 #### Perl
 
+- [perl >= 5.12](http://www.perl.org)
 - Install the YAML::Syck Perl module from [CPAN](http://search.cpan.org/dist/YAML-Syck/), the easiest way is to install `cpanm` first, then do
 
     $ cpanm YAML::Syck
