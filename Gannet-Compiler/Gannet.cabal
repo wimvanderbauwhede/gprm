@@ -20,6 +20,6 @@ Executable gannetc
     if os(linux)    
         GHC-Options: -O -static -fwarn-unused-binds -fwarn-unused-imports -fwarn-unused-matches -fwarn-unused-do-bind
     if os(linux)
-        ld-options: -static    
+        ld-options: -static -pthread
     Main-is: Main.hs
     Hs-Source-Dirs: .
