@@ -43,18 +43,27 @@ test-suite gpc-unit-tests
     other-modules: GPC.AST GPC.ParserTests GPC.Lexer GPC.Parser GPC.Tests GPC.CodeGen
                 GPC.CodeGenTests GPC.TypeTests GPC.TypeScopeChecker GPC.Interpreter
                 GPC.CompileTests, GPC.Errors
-executable gpcc
+executable gpcc-darwin
     main-is: Main.hs
 -- other-modules:
     other-extensions: NoMonomorphismRestriction
     build-depends: base >=4.6 && <4.8, parsec >=3.1 && <3.2, wl-pprint, split, containers, mtl, lens >= 4.5, errors
-    if os(darwin)
-        ghc-options: -Wall -fno-warn-missing-signatures
-    if os(linux)    
-        ghc-options: -Wall -static -fno-warn-missing-signatures  
-    if os(linux)
-        ld-options: -static -pthread    
+    ghc-options: -Wall -fno-warn-missing-signatures
     default-extensions: RankNTypes
     hs-source-dirs: src/GPC src
     default-language: Haskell2010
+    if !os(darwin)
+        buildable: False  
 
+executable gpcc-linux
+    main-is: Main.hs
+-- other-modules:
+    other-extensions: NoMonomorphismRestriction
+    build-depends: base >=4.6 && <4.8, parsec >=3.1 && <3.2, wl-pprint, split, containers, mtl, lens >= 4.5, errors
+    ghc-options: -Wall -static -fno-warn-missing-signatures  
+    ld-options: -static -pthread    
+    default-extensions: RankNTypes
+    hs-source-dirs: src/GPC src
+    default-language: Haskell2010
+    if !os(linux)
+        buildable: False          
