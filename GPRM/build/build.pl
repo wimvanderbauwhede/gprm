@@ -113,15 +113,14 @@ if ($init) {
     system("tar -zxvf $gannet_dir/examples/gprm-project-skeleton.tgz");
 }
 
-if ($init or not -e "$gannet_dir/bin/gpcc-$platform") {    
-    # TODO: build gpcc and gannetc
+if ($init and not -e "$gannet_dir/bin/gpcc-$platform") {       
     chdir "$gannet_dir/GPC";
     system('cabal configure');
     system('cabal build');
     system('cabal install --bindir=../bin');
-    chdir $wd;
+    chdir $wd;    
 }
-if ($init or not -e "$gannet_dir/bin/gannetc-$platform") {    
+if ($init and not -e "$gannet_dir/bin/gannetc-$platform") {    
     chdir "$gannet_dir/Gannet-Compiler";
     system('./build.pl -C -i');
     chdir $wd;
@@ -267,8 +266,8 @@ die "Done cleaning\n";
 				say "gprm: generating library configuration $class.yml and wrappers" if $verbose;
 				my @task_methods=WrapperGenerator::generate($class,$nclasses,$is_core, $task_name, $task_path, $opts);
 				for my $task_method(@task_methods) {
-				    system("gpcc src/GPRM/Task/$task_method.cc -n $nthreads");
-				    system("gannetc	-Y $ymlfile  src/GPRM/Task/$task_method.td");
+				    system("gpcc-$platform src/GPRM/Task/$task_method.cc -n $nthreads");
+				    system("gannetc-$platform -Y $ymlfile  src/GPRM/Task/$task_method.td");
 				}
             } else {
                 say "gprm: did NOT generate library configuration $class.yml and wrappers!!!" if $verbose;

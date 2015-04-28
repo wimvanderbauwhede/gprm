@@ -56,7 +56,6 @@ if ($install) {
 #    system('cabal install --ghc-options="-cpp -O -DWORDSZ='.$W.'" --bindir=../bin');
     print 'cabal install --bindir=../bin'."\n";
     system('cabal install --bindir=../bin');    
-    system("cp ../bin/gannetc ../bin/gannetc$W");
 }
 
 #rename 'Gannet-Compiler.cabal.OFF', 'Gannet-Compiler.cabal';
