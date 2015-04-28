@@ -32,7 +32,12 @@ test-suite gpc-unit-tests
                     lens >= 4.5,
                     errors,
                     directory >= 1.2.1.0
-    ghc-options : -Wall -fno-warn-missing-signatures -fhpc 
+    if os(darwin)
+        ghc-options : -Wall -fno-warn-missing-signatures -fhpc 
+    if os(linux)    
+        ghc-options : -Wall -static -fno-warn-missing-signatures -fhpc 
+    if os(linux)
+        ld-options: -static     
     default-extensions: RankNTypes    
     default-language: Haskell2010
     other-modules: GPC.AST GPC.ParserTests GPC.Lexer GPC.Parser GPC.Tests GPC.CodeGen

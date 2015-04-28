@@ -23,7 +23,7 @@ if ($install==1) {$build=0};
 my $c=$opts{'c'}?1:0;
 my $C=$opts{'C'}?1:0;
 $c||=$C;
-
+chomp my $os=`uname`;
 #rename 'Gannet.cabal.OFF', 'Gannet.cabal';
 #rename 'Gannet-Compiler.cabal', 'Gannet-Compiler.cabal.OFF';
 #my $NEWflag=$opts{'N'}?'-fNEW':'';

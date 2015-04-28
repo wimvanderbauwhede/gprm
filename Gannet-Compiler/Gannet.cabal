@@ -13,11 +13,13 @@ Description:
 Synopsis: Compiler for the GPRM Intermediate Representation language (GPIR, aka Gannet)
 copyright: Wim Vanderbauwhede
 
-
 Executable gannetc
     Build-Depends: mtl, base, containers, parsec, HsSyck >= 0.45, directory, bytestring
-    GHC-Options: -O -fwarn-unused-binds -fwarn-unused-imports -fwarn-unused-matches -fwarn-unused-do-bind
---    GHC-Options: -O -static -fwarn-unused-binds -fwarn-unused-imports -fwarn-unused-matches -fwarn-unused-do-bind
---    ld-options: -static    
+    if os(darwin)
+        GHC-Options: -O -fwarn-unused-binds -fwarn-unused-imports -fwarn-unused-matches -fwarn-unused-do-bind
+    if os(linux)    
+        GHC-Options: -O -static -fwarn-unused-binds -fwarn-unused-imports -fwarn-unused-matches -fwarn-unused-do-bind
+    if os(linux)
+        ld-options: -static    
     Main-is: Main.hs
     Hs-Source-Dirs: .
