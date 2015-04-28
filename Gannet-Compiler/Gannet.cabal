@@ -13,9 +13,17 @@ Description:
 Synopsis: Compiler for the GPRM Intermediate Representation language (GPIR, aka Gannet)
 copyright: Wim Vanderbauwhede
 
+Flag MacPorts
+    description: Use MacPorts toolchain rather than OS X default one
+    default: False
+
 Executable gannetc-darwin
     Build-Depends: mtl, base, containers, parsec, HsSyck >= 0.45, directory, bytestring
-    GHC-Options: -O -fwarn-unused-binds -fwarn-unused-imports -fwarn-unused-matches -fwarn-unused-do-bind
+    if flag(MacPorts)
+        GHC-Options: -O -pgml /opt/local/bin/ld -static -fwarn-unused-binds -fwarn-unused-imports -fwarn-unused-matches -fwarn-unused-do-bind
+    if !flag(MacPorts)
+        GHC-Options: -O -static -fwarn-unused-binds -fwarn-unused-imports -fwarn-unused-matches -fwarn-unused-do-bind
+    ld-options: -static 
     Main-is: Main.hs
     Hs-Source-Dirs: .
     if !os(darwin)

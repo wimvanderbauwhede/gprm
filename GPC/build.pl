@@ -6,7 +6,7 @@ use Cwd;
 my $wd=cwd();
 my %opts=();
 if (!@ARGV) {$opts{'h'}=1}
-getopts( 'hvCcbi', \%opts );
+getopts( 'hvCcbim', \%opts );
 
 if ( $opts{'h'} ) {
 die "$0 options:
@@ -14,8 +14,10 @@ die "$0 options:
     -b: build 
     -i: install
     -C: clean, then configure
+    -m: MacPorts
 ";
 }
+my $mflag=$opts{'m'}?'-fMacPorts':'';
 my $v=$opts{'v'}?'--verbose=2':'';
 my $build=($opts{'b'} || $opts{'c'} || $opts{'C'})  ?1:0;
 my $install=$opts{'i'}?1:0;
@@ -34,11 +36,11 @@ if ($C) {
 }	
 if ($c) {
     print "* Cabal configure\n";
-    system("cabal configure"); 
+    system("cabal configure $mflag"); 
 }
 if ($build) {    
     print 'cabal build '.$v."\n";
-    system('cabal build '.$v);
+    system('cabal build '.$mflag.' '.$v);
     
 }
 if ($install) {
