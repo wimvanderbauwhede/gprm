@@ -37,7 +37,7 @@ test-suite gpc-unit-tests
     if os(linux)    
         ghc-options : -Wall -static -fno-warn-missing-signatures -fhpc 
     if os(linux)
-        ld-options: -static     
+        ld-options: -static -pthread    
     default-extensions: RankNTypes    
     default-language: Haskell2010
     other-modules: GPC.AST GPC.ParserTests GPC.Lexer GPC.Parser GPC.Tests GPC.CodeGen
