@@ -3,13 +3,17 @@
 #endif
 #include "Schedule.h"
 #ifndef DARWIN
+#ifndef _GNU_SOURCE
 #define _GNU_SOURCE
+#endif
 #include <sched.h> // thread mapping
 #endif
 #define RESET_COLOR "\e[m"
 #define MAKE_PURPLE "\e[35m"
 #define MAKE_GREEN "\e[32m"
 #define MAKE_RED "\e[31m"
+// WV20201211 temporary hack, this should be in the build system
+#define NUM_CORES 4
 
 int appid = 0;
 
@@ -18,21 +22,21 @@ int appid = 0;
 	cpu_set_t  mask;
 	CPU_ZERO(&mask);
 #endif
-	int target_core; //printf("NUM_CPU: %d\n",NUM_CPU);
+	int target_core; //printf("ADDRESS: %d NUM_CPU: %d TARGET_CORE: %d\n",address,NUM_CPU,target_core);
 	
-	if(address==0) target_core=239;//address;
-	else if(address==1) target_core=0;	
-
+	if(address==0) target_core=NUM_CORES-1 ;// WV: ugly, 240 threads max
+	else if(address==1) target_core=0 ;	
+	else target_core = address % NUM_CORES ;
 	//4 per phyiscal core Distribution
 	//else target_core=(((address-1)%240)); //2->1 241->240(0)(last_one)
 
 	//2 per physical core Distribution
-	else if (address<122) target_core=((address-2)*2+1)%240;// for the SULUG with 4 cores in total!
-        else target_core=((address-2)*2+2)%240;
+	// else if (address<122) target_core=((address-2)*2+1)%NUM_CORES;// for a machine with 4 cores in total!
+    //     else target_core=((address-2)*2+2)%NUM_CORES;
 	//end of 2 per core
 
-//	if((address%240)<120) target_core=((address*2)%NUM_CPU);// for the SULUG with 4 cores in total!
-//	else target_core=((address*2+1)%NUM_CPU);
+//	if((address%240)<120) target_core=((address*2)%NUM_CORES);// for the SULUG with 4 cores in total!
+//	else target_core=((address*2+1)%NUM_CORES);
 	
 /*	
 	else if (address<62) target_core=((address-2)*4+1)%240;// for the SULUG with 4 cores in total!
@@ -49,13 +53,18 @@ int appid = 0;
         target_core = (target_core+((appid -1)*4))%240;
 #endif
 #endif
-	//target_core=(address<=120?address*2:address*2+1)%NUM_CPU;
+	//target_core=(address<=120?address*2:address*2+1)%NUM_CORES;
 	//printf("add: %d\n",address);
-	//target_core=address%NUM_CPU;
+	//target_core=address%NUM_CORES;
+
+// int sched_setaffinity(pid_t pid, size_t cpusetsize,
+//                       cpu_set_t *mask);
+// printf("ADDRESS: %d TARGET_CORE: %d\n",address,target_core);
 #ifndef DARWIN
 	CPU_SET(target_core, &mask);
-	if (sched_setaffinity(0, sizeof(mask), &mask) !=0)
+	if (sched_setaffinity(0, sizeof(mask), &mask) !=0) {
 		perror("sched_setaffinity");
+	}
 #endif
 	return target_core;
  }

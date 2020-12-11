@@ -62,11 +62,11 @@
              char inp[255]; // the 255 is very ad-hoc
             if ((not lookup_table.count(port))){
             	 std::cerr << port << ": ";
-                 fgets(inp,255,stdin);
+                 char* res = fgets(inp,255,stdin);
             } else {
                  fd=(FILE*)(lookup_table.read(port));
                 if (not feof(fd) ){
-                     fgets(inp,255,fd);
+                     char* res = fgets(inp,255,fd);
                 }
             }
 

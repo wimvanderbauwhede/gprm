@@ -1188,7 +1188,7 @@ if (debug_all or service==debug_service){
             cout << "restart_subtask VM=1: pushing " <<subtask_address<< ""<<endl;
 #endif // VERBOSE
             subtask_fifo.push_back(subtask_word);
-            printf("subtask_word %d is pushed in service: ",subtask_word, service);
+            // printf("subtask_word %d is pushed in service: ",subtask_word, service);
     } // of restart_subtask
 
 #ifdef STEAL

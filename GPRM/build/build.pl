@@ -249,25 +249,30 @@ if ($clean) { # CLEAN!
 	}
 die "Done cleaning\n";
 } else { # GENERATE
-	if ($generate) {
+	if ($generate) { 
 # 0. Generate .yml library configuration from kernel class(es)
 #    and generate the wrapper function(s)		
 		my $changed = `scons -s -f $gannet_dir/GPRM/build/SConstruct.CheckChange.py SRC=$ymlpath`;
 		chomp $changed;
+        
+        
         my $is_core=0;
         my $nclasses=@sclibs;
 		for my $class (@sclibs) {
             if ($class eq 'CoreServices') {$is_core=1};
+            
 # FIXME: If there are several classes, this will generate a Services.h for each, so it will overwrite!
-
+            
 			if (
 			($changed eq '1' or (not -e "$cxx_gen_source_path/$class.yml" and $class ne 'CoreServices') ) or
 				 ( $class eq 'CoreServices' and $nclasses==1 ) ) {
 				say "gprm: generating library configuration $class.yml and wrappers" if $verbose;
 				my @task_methods=WrapperGenerator::generate($class,$nclasses,$is_core, $task_name, $task_path, $opts);
 				for my $task_method(@task_methods) {
-				    system("gpcc-$platform src/GPRM/Task/$task_method.cc -n $nthreads");
-				    system("gannetc-$platform -Y $ymlfile  src/GPRM/Task/$task_method.td");
+                    say "gpcc-$platform src/GPRM/Task/$task_method.cc -n $nthreads";
+                    # the LC_ALL is a hack because otherwise loadlocale.c throws an error
+				    system("LC_ALL='C.UTF-8' gpcc-$platform src/GPRM/Task/$task_method.cc -n $nthreads");
+				    system("LC_ALL='C.UTF-8' gannetc-$platform -Y $ymlfile  src/GPRM/Task/$task_method.td");
 				}
             } else {
                 say "gprm: did NOT generate library configuration $class.yml and wrappers!!!" if $verbose;
