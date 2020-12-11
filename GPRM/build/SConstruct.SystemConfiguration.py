@@ -7,11 +7,12 @@
 
 import os
 import re
-import commands
+#import commands
+import subprocess
 import sys
 #sys.path+=['/usr/lib/scons/']
 ext = ''
-if commands.getoutput("uname") == "Darwin": 
+if subprocess.check_output(['uname',''], shell=True).strip()  == "Darwin": 
     ext='-darwin'
 else:
     ext = '-linux'

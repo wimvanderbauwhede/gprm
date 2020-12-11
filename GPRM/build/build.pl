@@ -69,7 +69,7 @@ GetOptions (
     'build' =>\$build,
     'exe' =>\$build_exe,
     'shlib' => \$build_shared_lib,
-    'nothreads' => \$no_pthreads,
+    'singlethread' => \$no_pthreads,
     'cycles' => \$count_cycles,
 ) or do {$no_args=1};
 
@@ -96,7 +96,7 @@ if ( $help or $no_args) {
     --warn,-w: warnings 
     --verbose,-v: verbose
     --debug,-d: debug 
-    --nothreads,-N: DO NOT use POSIX threads, for single-threaded debugging        
+    --singlethread: DO NOT use POSIX threads, for single-threaded debugging        
     \n";
 }
 =pod Extra Options
@@ -180,7 +180,7 @@ if ($task_name eq '') {
 } elsif ($task_name=~/\//) { 
     $task_path= $task_name;
     $task_path=~s/\.\w+\s*$//; # strip extension
-    $task_name= pop [split(/\//,$task_path)]; # split on / and take last word
+    $task_name= pop( @{split(/\//,$task_path)}); # split on / and take last word
     $task_path=~s/\/\w+$//; # remove last word + leading / from path
 }
 $ymlfile ="$task_path/$task_name.yml";

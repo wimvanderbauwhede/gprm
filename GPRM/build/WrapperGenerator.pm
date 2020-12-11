@@ -17,7 +17,7 @@ our $task_name='Task';
 
 
 sub generate {
-    my ($libname,$nclasses,$is_core, my $task_name, my $task_path, my $opts) =@_;
+    my ($libname,$nclasses,$is_core, $task_name, $task_path, $opts) =@_;
     my $kernel_classes={};
 	if ($libname ne 'CoreServices') {
         $kernel_classes = parse_class_header($libname, $src_path);
@@ -58,6 +58,12 @@ System:
 		my $line="    $class: [ ".join(', ',sort keys %{$classes->{$class}} )." ]\n";
 		push @lines, $line;
 	}
+	if (not -d $gen_src_path) {
+		system("mkdir -p $gen_src_path");
+	}
+	if (not -d 'lib') {
+		mkdir 'lib';
+	}	
 	open my $LC, '>', "$gen_src_path/$libname.yml" unless -e "$src_path/$libname.yml";
 	for my $line (@lines) {
 		print $LC $line;
@@ -456,7 +462,7 @@ def gprmConfigEnv():
     LIBpaths=["./lib"]
     INCpaths=["./src","./src/GPRM","./gensrc",GPRM_DIR+"/GPRM/src/SBA",GPRM_DIR+"/GPRM/src",]
 
-    gprmEnv = Environment(CXX = cxx, CXXFLAGS = ['."$use_threads $kernel_has_state $kernel_lock ".'"-DGPRM_API","-O2","-std=c++11","-Wall"],LIBS=libs,LIBPATH=LIBpaths,CPPPATH=INCpaths, GPRMSRC=gprmSources)
+    gprmEnv = Environment(CXX = cxx, CXXFLAGS = ['."$use_threads $kernel_has_state $kernel_lock ".'"-DGPRM_API","-O2","-std=c++11","-Wall"],LINKFLAGS=["-pthread"],LIBS=libs,LIBPATH=LIBpaths,CPPPATH=INCpaths, GPRMSRC=gprmSources)
     return gprmEnv
 ';
 close $SCONS;            
