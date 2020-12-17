@@ -806,62 +806,6 @@ public:
 	typedef Packet_Fifo RX_Packet_Fifo;
 #else // USE_THREADS==1
 
-/*
-// length|clear|
-// Code borrowed from by Anthony Williams (11 December 2008)
-// http://www.justsoftwaresolutions.co.uk/threading/implementing-a-thread-safe-queue-using-condition-variables.html
-class RX_Packet_Fifo
-{
-private:
-    std::deque<Packet_t> packets;
-    mutable boost::mutex _RXlock;
-    boost::condition_variable _RXcond;
-public:
- 	unsigned int _status;
-	TRX_Packet_Fifo () :  _status(0) {};
-
-    void push(Packet_t const& data)
-    {
-        boost::mutex::scoped_lock lock(_RXlock);
-        packets.push_back(data);
-        _status=1;
-        lock.unlock();
-        _RXcond.notify_one();
-    }
-
-    bool empty() const
-    {
-        boost::mutex::scoped_lock lock(_RXlock);
-        return packets.empty();
-    }
-
-    unsigned int size() const
-    {
-        boost::mutex::scoped_lock lock(_RXlock);
-        return packets.size();
-    }
-
-    Packet_t shift()
-    {
-        boost::mutex::scoped_lock lock(_RXlock);
-        while(packets.empty())
-        {
-            _RXcond.wait(lock);
-        }
-
-        Packet_t t_elt=packets.front();
-        packets.pop_front();
-		if (empty()) _status=0;
-		return t_elt;
-    }
-	void clear() {
-		packets.clear();
-	}
-};
-*/
-// without boost
-
-
 //template <typename Packet_t, Word depth>
 class RX_Packet_Fifo {
 	private:
